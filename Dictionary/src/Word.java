@@ -1,6 +1,8 @@
 public class Word {
 
     private String text;
+
+    //Word definition in vietnamese.
     private String definition;
     Word(){
         this.definition="null";
@@ -9,6 +11,10 @@ public class Word {
     Word(String text, String definition){
         this.text = text;
         this.definition= definition;
+    }
+    Word(Word word){
+        this.text= word.text;
+        this.definition=word.definition;
     }
 
     public String getText() {
