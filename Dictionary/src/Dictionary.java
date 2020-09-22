@@ -19,9 +19,17 @@ public class Dictionary {
     public int wordCount(){
         return wordArrayList.size();
     }
-    public void removeWord(String wordText){
-
-
+    //------------MC Danh------------23-9-----------------------------------
+    public void removeWord(String wordText) {
+        DictionaryManagement d = new DictionaryManagement();
+        int i = d.dictionaryLookup(wordArrayList, wordText);
+        if (i != -1) {
+            wordArrayList.remove(wordArrayList.get(i));
+        }
+        else {
+            System.out.println("Word Not Found!");
+        }
     }
+//------------MC Danh--------End 23-9-----------------------------------
 
 }
