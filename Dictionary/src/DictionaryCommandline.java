@@ -32,21 +32,42 @@ public class DictionaryCommandline {
 
     //-----NT Hieu-----------23-9----------------------------------
 
-    public void dicionarySearcher(Dictionary d) {
+//     public void dicionarySearcher(Dictionary d) {
+//         Scanner in = new Scanner(System.in);
+//         String wordToFind = in.nextLine();
+
+//         for (Word word : d.wordArrayList) {
+//             if(wordToFind.charAt(0) == word.getText().charAt(0) && word.getText().contains(wordToFind)) {
+//                 out.println(word.getText());
+
+//             }
+//         }
+
+
+
+//     }
+    public void dictionarySearcher(Dictionary d) {
         Scanner in = new Scanner(System.in);
         String wordToFind = in.nextLine();
 
+        int n = wordToFind.length();
+
+        int count = 0;
         for (Word word : d.wordArrayList) {
-            if(wordToFind.charAt(0) == word.getText().charAt(0) && word.getText().contains(wordToFind)) {
+            if (n > word.getText().length()) {
+                count++;
+                continue;
+            }
+            String temp = word.getText().substring(0, n);
+            if (wordToFind.charAt(0) == word.getText().charAt(0) && temp.equals(wordToFind)) {
                 out.println(word.getText());
 
-            }
+            } else count++;
         }
-
+        if (count == d.wordArrayList.size()) System.out.println("Word not found");
 
 
     }
-
     //----NT Hieu-------------End 23-9----------------------------
 
 
