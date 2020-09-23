@@ -1,9 +1,16 @@
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class DictionaryManagement {
-    Dictionary d = new Dictionary();
+    //Dictionary d = new Dictionary();
 
-    public void insertFromCommandline() {
+//-----NT Hieu-----------22-9------------------------------------
+    public void insertFromCommandline(Dictionary d) {
         Scanner in = new Scanner(System.in);
         /*
         String bufferText,bufferDef;
@@ -11,6 +18,39 @@ public class DictionaryManagement {
         bufferDef=in.nextLine();*/
         d.addWord(in.nextLine(), in.nextLine());
     }
+//-----NT Hieu-----------23-9--------------------------------
+    public void insertFromFile(Dictionary d, String path) {
+
+    BufferedReader in = null;
+    try {
+        String bufferString;
+
+        in = new BufferedReader(new FileReader(path));
+
+        while ((bufferString = in.readLine()) != null) {
+
+            String[] splitString;
+            splitString = bufferString.split("\t");
+
+            d.addWord(splitString[0],splitString[1]);
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (in!=null) {
+                in.close();
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+
+    }
+    //-----NT Hieu-----------End 23-9--------------------------------
+
+
 //-----MC Danh-----------23-9------------------------------------
     //ham tim kiem tra va ve chi so cua String s
     public int dictionaryLookup(ArrayList<Word> arrList, String s) {

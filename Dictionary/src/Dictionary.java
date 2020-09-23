@@ -6,6 +6,10 @@ public class Dictionary {
         wordArrayList.add(new Word(wordText,wordDef));
     }
 
+    public ArrayList<Word> getWordArrayList() {
+        return wordArrayList;
+    }
+
     public void addWord(Word word){
         wordArrayList.add(new Word(word));
 
