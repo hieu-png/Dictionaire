@@ -27,9 +27,10 @@ public class MainProgram
         Dictionary d = new Dictionary();
         DictionaryCommandline dc = new DictionaryCommandline();
         DictionaryManagement dm = new DictionaryManagement();
-        dm.insertFromFile(d,"D:\\dictionary.txt");
-        dc.dictionarySearcher(d);
-        dc.dictionarySearcher(d);
+       // dm.insertFromFile(d,"D:\\dictionary.txt");
+        dm.insertFromFileAdvanced(d,"D:\\anhviet109K.txt");
+      //  dc.dictionarySearcher(d);
+       // dc.dictionarySearcher(d);
         /*
        Word w1 = new Word("Kill","Giet");
         d.addWord(w1);
