@@ -27,8 +27,12 @@ public class MainProgram
         Dictionary d = new Dictionary();
         DictionaryCommandline dc = new DictionaryCommandline();
         DictionaryManagement dm = new DictionaryManagement();
+        UI ui = new UI();
+      //  while(true){
+
+      //  }
        // dm.insertFromFile(d,"D:\\dictionary.txt");
-        dm.insertFromFileAdvanced(d,"D:\\anhviet109K.txt");
+       // dm.insertFromFileAdvanced(d,"D:\\anhviet109K.txt");
       //  dc.dictionarySearcher(d);
        // dc.dictionarySearcher(d);
         /*
