@@ -14,9 +14,17 @@ public class DictionaryApplication {
     private JFrame mainFrame;
     private JPanel controlPanel;
 
+    //Link hinh anh
+
+    //String imagePath = "C:\\Users\\pc\\OneDrive\\" +
+    //        "Máy tính\\beautiful blue color background\\image.png";
+    String imagePath = "D:\\CocoTit.png";
+
     public DictionaryApplication() {
         prepareGUI();
     }
+
+
 
 
     public void prepareGUI() {
@@ -25,13 +33,14 @@ public class DictionaryApplication {
         mainFrame.getContentPane().setBackground(Color.RED);
         Image image = null;
         try {
-            image = ImageIO.read(new File("C:\\Users\\pc\\OneDrive\\" +
-                    "Máy tính\\beautiful blue color background\\image.png"))
+            image = ImageIO.read(new File(imagePath))
                     .getScaledInstance(800, 600, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mainFrame.setContentPane(new ImagePanel(image));
+        Panel bg = new Panel();
+
+        mainFrame.setContentPane(bg);
 
 
 
@@ -67,9 +76,8 @@ public class DictionaryApplication {
 
         Image image = null;
         try {
-            image = ImageIO.read(new File("C:\\Users\\pc\\OneDrive\\" +
-                    "Máy tính\\beautiful blue color background\\book.png"))
-                    .getScaledInstance(18, 18, Image.SCALE_DEFAULT);
+            image = ImageIO.read(new File(imagePath))
+                    .getScaledInstance(800, 600, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -102,55 +110,80 @@ public class DictionaryApplication {
 
     //------------function display AddWordWindow--------------------------------
 
-----------------------------------------DKA xem cai layout cua AddBar va DefineBar xem lam sao cho no tach nhau ra y------------------------
-    public static void AddWordWindow(){
+//----------------------------------------DKA xem cai layout cua AddBar va DefineBar xem lam sao cho no tach nhau ra y------------------------
+   /* public static void AddWordWindow(){
         JFrame AddWordFrame = new JFrame("Add new word");
-        AddWordFrame.setSize(600, 400);
+
+        AddWordFrame.setSize(400, 200);
 
         JPanel midControl = new JPanel();
-        midControl.setSize(400, 300);
-        midControl.setLayout(new BoxLayout(midControl, BoxLayout.Y_AXIS));
+
+        midControl.setSize(400, 200);
+
+        midControl.setLayout(new GridBagLayout());
 
 
-        //AddWordFrame.getContentPane().setBackground(Color.RED);
-        //AddWordFrame.setLayout(null);
-//        AddWordFrame.addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowOpened(WindowEvent e) {
-//            }
-//        });
+
 
         Font font = new Font("Arial", Font.BOLD, 14);
         JTextField AddBar = new HintTextField("Add...");
 
-        midControl.add(AddBar);
+
         AddBar.setFont(font);
         AddBar.setBounds(15, 10, 500, 40);
 
 
+        /*
         JTextArea DefineBar = new HintTextArea("");
 
         JScrollPane DefineBarScrollPane = new JScrollPane(DefineBar);
         DefineBarScrollPane.setVerticalScrollBarPolicy ( ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS );
         DefineBar.setRows(20);
         DefineBar.setColumns(20);
-        midControl.add(DefineBarScrollPane);
+       midControl.add(DefineBarScrollPane);
         DefineBar.setFont(font);
         DefineBar.setBounds(15, 70, 500, 250);
-        //AddWordFrame.add(DefineBar);
+        AddWordFrame.add(DefineBar);
+
+
 
 
         AddWordFrame.getContentPane().add(midControl);
-
-
 
         AddWordFrame.setLocationRelativeTo(null);
 
 
         AddWordFrame.setVisible(true);
     }
+    */
+    public static void AddWordWindow() {
 
 
+
+        JTextField text = new JTextField(5);
+        JTextField definition = new JTextField(5);
+
+        //Text and Definition text field component must have the same name
+        Object[] components = {
+            new JLabel("Text"),text,
+            new JLabel("Definition"), definition
+        };
+
+       int addWordResult = JOptionPane.showConfirmDialog(null, components,
+                "Enter the word's text and it's definition", JOptionPane.OK_CANCEL_OPTION);
+
+
+        if (addWordResult == JOptionPane.OK_OPTION) {
+        if (text.getText() != null && definition.getText() != null) {
+            //TODO :ADD WORD
+
+
+        }
+
+        } else {
+
+        }
+    }
 
 
     public static void main(String[] args) {

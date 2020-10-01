@@ -6,6 +6,8 @@ import static java.lang.System.out;
 enum wordFindType {
     matchFirst, matchAll
 }
+
+
 public class DictionaryCommandline {
 
     public void showAllWords(Dictionary d) {
@@ -59,6 +61,8 @@ public class DictionaryCommandline {
         }
     }
 
+
+
     //-----------------NT Hieu End 23-9----------------------------
 
     /**
@@ -66,7 +70,7 @@ public class DictionaryCommandline {
      * @param d dictionary
      * @param wordToFind word string to find
      * @param typeOfWordFind matchFirst is match only look for words have the same beginning
-     *                 matchAll is to find all similiar substring.
+     *                 matchAll is to find all similar substring.
      * @return list of words found
      */
     public ArrayList<Word> dictionaryFinder(Dictionary d, String wordToFind, wordFindType typeOfWordFind) {
