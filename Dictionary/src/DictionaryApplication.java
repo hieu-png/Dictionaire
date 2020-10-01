@@ -102,7 +102,7 @@ public class DictionaryApplication {
 
     //------------function display AddWordWindow--------------------------------
 
-
+----------------------------------------DKA xem cai layout cua AddBar va DefineBar xem lam sao cho no tach nhau ra y------------------------
     public static void AddWordWindow(){
         JFrame AddWordFrame = new JFrame("Add new word");
         AddWordFrame.setSize(600, 400);
