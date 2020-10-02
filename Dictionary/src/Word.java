@@ -31,7 +31,27 @@ public class Word {
     }
 
 
+    //List all the definition on the same line.
+    public String getDefinitionSameLine() {
+        String tempDef = definition;
 
+        return tempDef.replaceAll("- ",", ");
+    }
+
+    //List all definition per line.
+    public String getDefinitionLine() {
+        String tempDef = definition;
+        return tempDef.replaceAll("-","\n");
+    }
+
+    public void addDefinition(String definition) {
+        if (this.definition == null) {
+            this.definition = definition;
+        } else {
+
+            this.definition += "-" + definition;
+        }
+    }
 
     public void setDefinition(String definition) {
         this.definition = definition;

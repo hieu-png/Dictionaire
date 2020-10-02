@@ -55,6 +55,7 @@ public class DictionaryManagement {
      * @param d
      * @param path
      */
+    /*
     public void insertFromFileAdvanced(Dictionary d, String path) {
     /*
     BufferedReader in = null;
@@ -110,11 +111,87 @@ public class DictionaryManagement {
             e.printStackTrace();
         }
     }
-
+    }
 
 
 */
-}
+
+    public void insertFromFileAdvanced(Dictionary d, String path)   {
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new FileReader(path));
+            String bufferString;
+           String wordText = "";
+           String wordDef ="";
+            while((bufferString = in.readLine()) != null) {
+
+            if (!bufferString.isEmpty()) {
+
+                if (bufferString.charAt(0) == '@') {
+                    if (wordDef != "") {
+                    d.addWord(wordText,wordDef);
+                   // System.out.println("New word added: " + wordText + "::" + wordDef);
+                        wordDef = "";
+                    }
+
+                    //bufferString.replaceFirst(" /"," ");
+                   // bufferString.replaceFirst("\n"," ");
+                    int endPoint = bufferString.indexOf(" /");
+                    if (endPoint == -1 ) {
+                        endPoint = bufferString.length();
+                    }
+                    wordText = bufferString.substring(1,endPoint);
+
+
+            } else if (bufferString.charAt(0) == '-' && wordText != "") {
+
+                    wordDef += bufferString;
+                }
+
+            }
+            }
+            //Add the last word
+            d.addWord(wordText,wordDef);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+             try {
+                 if (in != null) {
+                     in.close();
+                 }
+             } catch (IOException e) {
+                 e.printStackTrace();
+             }
+        }
+
+    }
+
+    public static void insertFromFileAdvancedDanh(String path) throws IOException {
+        StringBuilder s = new StringBuilder();
+        BufferedReader in = new BufferedReader(new FileReader(path));
+        ArrayList<String> words = new ArrayList<>();
+        String f;
+        f = in.readLine();
+        f = f.substring(1, f.length());
+        String word = "";
+        word = word + f + "\n";
+        int i = 0;
+        while (f != null ) {
+            while (true) {
+                f = in.readLine();
+                word = word + f + "\n" ;
+                if(f != null)
+                if (!f.isEmpty() && f.charAt(0) == '@') {
+                    break;
+                }
+            }
+            System.out.print(word);
+            words.add(word);
+            word = "";
+        }
+
+    }
 
 //-----MC Danh-----------23-9------------------------------------
     //ham tim kiem tra va ve chi so cua String s

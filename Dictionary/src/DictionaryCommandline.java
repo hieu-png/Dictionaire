@@ -14,8 +14,9 @@ public class DictionaryCommandline {
         //--------------------------------------------------------------------------
         out.printf("%-10s%-25s%-25s\n", "No", "|English", "|Vietnamese");
         for (int i = 0; i < d.wordCount(); i++) {
+
             out.printf("%-10d%-25s%-25s\n", i + 1, "|" + d.wordArrayList.get(i).getText()
-                                                 , "|" + d.wordArrayList.get(i).getDefinition());
+                                                 , "|" + d.wordArrayList.get(i).getDefinitionSameLine().substring(2));
         }
     }
     //-----NT Hieu-----------23-9----------------------------------

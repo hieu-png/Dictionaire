@@ -27,7 +27,10 @@ public class MainProgram
         Dictionary d = new Dictionary();
         DictionaryCommandline dc = new DictionaryCommandline();
         DictionaryManagement dm = new DictionaryManagement();
-        UI ui = new UI();
+        dm.insertFromFileAdvanced(d,"D:\\anhviet109K.txt");
+        dc.dictionaryExportToFile(d,"D:\\Finished.txt");
+        dc.showAllWords(d);
+       // UI ui = new UI();
       //  while(true){
 
       //  }

@@ -157,9 +157,6 @@ public class DictionaryApplication {
     }
     */
     public static void AddWordWindow() {
-
-
-
         JTextField text = new JTextField(5);
         JTextField definition = new JTextField(5);
 
@@ -172,14 +169,10 @@ public class DictionaryApplication {
        int addWordResult = JOptionPane.showConfirmDialog(null, components,
                 "Enter the word's text and it's definition", JOptionPane.OK_CANCEL_OPTION);
 
-
         if (addWordResult == JOptionPane.OK_OPTION) {
         if (text.getText() != null && definition.getText() != null) {
             //TODO :ADD WORD
-
-
         }
-
         } else {
 
         }
