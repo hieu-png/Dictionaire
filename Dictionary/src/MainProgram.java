@@ -6,29 +6,21 @@ import java.io.IOException;
 public class MainProgram
 {
     /* TODO
-    insert from file DONE
-    dictionary look up DONE
 
-    dictionary advanced DONE
     add remove with command in dictionary management
 
-    dictionary searcher DONE
-    dictionary export to file DONE
     */
 
 
     //Testing ground
     public static void main(String[] args) throws IOException {
-        /*
-        JFrame f = new JFrame();
-        f.setSize(400,500);
-        f.setLayout(null);
-        f.setVisible(true);*/
+
         Dictionary d = new Dictionary();
         DictionaryCommandline dc = new DictionaryCommandline();
         DictionaryManagement dm = new DictionaryManagement();
-        dm.insertFromFileAdvanced(d,"D:\\anhviet109K.txt");
-        dc.dictionaryExportToFile(d,"D:\\Finished.txt");
+
+        out.println(System.getProperty("user.dir"));
+
         dc.showAllWords(d);
        // UI ui = new UI();
       //  while(true){

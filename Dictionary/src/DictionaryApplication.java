@@ -1,11 +1,11 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,27 +14,32 @@ public class DictionaryApplication {
 
     private JFrame mainFrame;
     private JPanel controlPanel;
-    final int width = 800, height = 600;
-    private JTextArea WordDefineArea;
-
+    private String imageFolderPath = System.getProperty("user.dir")+"\\Dictionary\\Image\\";
 
     public DictionaryApplication() {
         prepareGUI();
     }
 
-
-    public void prepareGUI() {
-        mainFrame = new JFrame("Dictionary 2.0");
-        mainFrame.setSize(width, height);
-        mainFrame.getContentPane().setBackground(Color.RED);
+    public Image loadImageFromFile(String path, int width, int height) {
         Image image = null;
         try {
-            image = ImageIO.read(new File("C:\\Users\\pc\\OneDrive\\" +
-                    "Máy tính\\beautiful blue color background\\Blue_Background.png"))
+            image = ImageIO.read(new File(path))
                     .getScaledInstance(width, height, Image.SCALE_DEFAULT);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return  image;
+    }
+
+
+    public void prepareGUI() {
+        mainFrame = new JFrame("Dictionary 2.0");
+        mainFrame.setSize(800, 600);
+        mainFrame.getContentPane().setBackground(Color.RED);
+
+        //Image image = loadImageFromFile(imageFolderPath + "Blue_Background.png",800,600);
+
+
         mainFrame.setContentPane(new ImagePanel(image));
 
 
@@ -56,7 +61,7 @@ public class DictionaryApplication {
 
     public void UI(DictionaryApplication dictionaryApplication) {
         mainFrame.setLocationRelativeTo(null);
-
+        mainFrame.setResizable(false);
         DictionaryManagement d = new DictionaryManagement();
         ArrayList<String> words = null;
         try {
@@ -64,24 +69,17 @@ public class DictionaryApplication {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         Dictionary dictionary = d.WordFromBigFile(words);
         int N = dictionary.wordCount();
         String[] textWord = new String[N];
         for (int i = 0; i < N; i++) {
             textWord[i] = dictionary.wordByIndex(i).getText();
-            //System.out.println(textWord[i]);
+
         }
-        dictionaryApplication.ShowListMenu(textWord,dictionary);
-        SearchBar();
-        dictionaryApplication.ShowWordDefine(dictionary);
-        ShowWordButton();
-        RemoveButton();
+        dictionaryApplication.ShowListMenu(textWord);
 
 
-        mainFrame.setVisible(true);
-    }
-
-    public void SearchBar() {
         JTextField searchBar = new HintTextField("Search...");
         searchBar.setOpaque(false);
         searchBar.setForeground(Color.DARK_GRAY);
@@ -90,18 +88,11 @@ public class DictionaryApplication {
         Font f = new Font("Arial", Font.BOLD, 20);
         searchBar.setFont(f);
         mainFrame.add(searchBar);
-        searchBar.setBounds(15, 10, width - 100, 40);
-    }
+        searchBar.setBounds(15, 10, 700, 40);
 
-    public void ShowWordButton() {
-        Image image = null;
-        try {
-            image = ImageIO.read(new File("C:\\Users\\pc\\OneDrive\\" +
-                    "Máy tính\\beautiful blue color background\\book.png"))
-                    .getScaledInstance(18, 18, Image.SCALE_DEFAULT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Image image = loadImageFromFile(imageFolderPath + "book.png",18,18);
+
+
         JButton ShowAllWordButton = new JButton();
         assert image != null;
         ShowAllWordButton.setIcon(new ImageIcon(image));
@@ -109,6 +100,7 @@ public class DictionaryApplication {
 
         mainFrame.add(ShowAllWordButton);
         ShowAllWordButton.setBounds(0, 50, 28, 28);
+
 
 
         JButton AddWordButton = new JButton("Add+");
@@ -121,13 +113,15 @@ public class DictionaryApplication {
 
             }
         });
-    }
 
-    public void RemoveButton() {
         JButton RemoveButton = new JButton("Remove");
         mainFrame.add(RemoveButton);
-        RemoveButton.setBounds(256, 50, 80, 28);
+        RemoveButton.setBounds(256,50,80,28);
+
+
+        mainFrame.setVisible(true);
     }
+
 
     //------------function display AddWordWindow--------------------------------
 
@@ -154,44 +148,22 @@ public class DictionaryApplication {
         }
     }
 
-    public void ShowListMenu(String[] s,Dictionary d) {
+    public void ShowListMenu(String[] s) {
         JList<String> ListWord = new JList<>(s);
         ListWord.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListWord.setVisibleRowCount(20);
-        Font font = new Font("Arial", Font.BOLD, 12);
-        ListWord.setFont(font);
-        ListWord.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                if(!e.getValueIsAdjusting()){
-                    int i = ListWord.getSelectedIndex();
-                    WordDefineArea.setText(d.getWordArrayList().get(i).getText() +"  " + d.getWordArrayList().get(i).getDefinition());
-                }
-            }
-        });
+
         JScrollPane ListScrollPane = new JScrollPane(ListWord);
         ListScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         mainFrame.add(ListScrollPane);
-        ListScrollPane.setBounds(27, 50, 150, height - 110);
-
+        ListScrollPane.setBounds(27, 50, 150, 490);
 
     }
-
-    public void ShowWordDefine(Dictionary d) {
-        WordDefineArea = new JTextArea(1, 10);
-        WordDefineArea.setEditable(true);
-        WordDefineArea.setEditable(false);
-        JScrollPane outputScrollPane = new JScrollPane(WordDefineArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        //WordDefineArea.append(" "+d.getWordArrayList().get(1).getDefinition());
-        mainFrame.add(outputScrollPane);
-        outputScrollPane.setBounds(177, 79, 539, 460);
-    }
-
 
     public static void Start() {
         DictionaryApplication dictionaryApplication = new DictionaryApplication();
         dictionaryApplication.UI(dictionaryApplication);
+
 
 
     }
@@ -199,8 +171,6 @@ public class DictionaryApplication {
     public static void main(String[] args) {
         Start();
     }
-
-
 }
 
 
