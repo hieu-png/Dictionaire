@@ -158,12 +158,14 @@ public class DictionaryApplication {
         JList<String> ListWord = new JList<>(s);
         ListWord.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListWord.setVisibleRowCount(20);
+        Font font = new Font("Arial", Font.BOLD, 12);
+        ListWord.setFont(font);
         ListWord.addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if(!e.getValueIsAdjusting()){
                     int i = ListWord.getSelectedIndex();
-                    WordDefineArea.setText(d.getWordArrayList().get(i).getDefinition());
+                    WordDefineArea.setText(d.getWordArrayList().get(i).getText() +"  " + d.getWordArrayList().get(i).getDefinition());
                 }
             }
         });
