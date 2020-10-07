@@ -52,7 +52,7 @@ public class DictionaryManagement {
     public ArrayList<String> insertFromFileAdvanced() throws IOException {
 
         StringBuilder s = new StringBuilder();
-        BufferedReader in = new BufferedReader(new FileReader(System.getProperty("user.dir")+"//Dictionary//anhviet109K.txt"));
+        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\pc\\IdeaProjects\\DictionaryApp\\anhviet109K.txt"));
         ArrayList<String> words = new ArrayList<>();
         String f;
         f = in.readLine();
@@ -110,14 +110,6 @@ public class DictionaryManagement {
             String s2 = words.get(i).substring(h);
             dictionary.addWord(s1, s2);
         }
-//        int n = temp.size();
-//        //return array of textWord
-//        String[] textWord = new String[n];
-//        for(int i=0;i<n;i++){
-//            textWord[i] = temp.get(i);
-//            System.out.println(textWord[i]);
-//        }
-//        return textWord;
         return dictionary;
     }
 
@@ -132,6 +124,13 @@ public class DictionaryManagement {
             e.printStackTrace();
         }
     }
+
+
+
+     public void removeWord(ArrayList<Word> arrList,Word s){}
+
+
+
 
     //-----MC Danh-----------23-9------------------------------------
     //ham tim kiem tra va ve chi so cua String s
