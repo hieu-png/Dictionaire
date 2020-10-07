@@ -52,7 +52,7 @@ public class DictionaryManagement {
     public ArrayList<String> insertFromFileAdvanced() throws IOException {
 
         StringBuilder s = new StringBuilder();
-        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\pc\\IdeaProjects\\DictionaryApp\\anhviet109K.txt"));
+        BufferedReader in = new BufferedReader(new FileReader(System.getProperty("user.dir")+"\\Dictionary\\anhviet109K.txt"));
         ArrayList<String> words = new ArrayList<>();
         String f;
         f = in.readLine();
