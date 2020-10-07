@@ -3,7 +3,10 @@ import java.util.ArrayList;
 public class Dictionary {
     ArrayList<Word> wordArrayList = new ArrayList<Word>();
     public void addWord(String wordText, String wordDef){
-        wordArrayList.add(new Word(wordText,wordDef));
+
+        wordArrayList.add(new Word(wordText, wordDef));
+        System.out.println("Word added: " + wordText);
+
     }
 
     public ArrayList<Word> getWordArrayList() {
@@ -12,8 +15,14 @@ public class Dictionary {
 
     public void addWord(Word word){
         wordArrayList.add(new Word(word));
+        System.out.println("Word added: " + word.getText());
 
+    }
 
+    public void removeWord(int index) {
+        System.out.println("Word removed: " + wordArrayList.get(index).getText());
+
+        wordArrayList.remove(index);
     }
 
     public Word wordByIndex(int i) {

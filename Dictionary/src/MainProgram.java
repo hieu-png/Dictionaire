@@ -5,11 +5,10 @@ import java.io.IOException;
 
 public class MainProgram
 {
-    /* TODO
+    //TODO
+    //add remove with command in dictionary management
 
-    add remove with command in dictionary management
 
-    */
 
 
     //Testing ground

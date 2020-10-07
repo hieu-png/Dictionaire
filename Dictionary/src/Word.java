@@ -11,6 +11,8 @@ public class Word {
         this.text="null";
     }
     Word (String text, String definition) {
+        //text.charAt(0)
+
         this.text = text;
         this.definition= definition;
     }
