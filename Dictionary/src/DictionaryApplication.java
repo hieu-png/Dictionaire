@@ -189,19 +189,19 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
     public void UpdateList() {
 
-        ListWord.updateUI();
+        //ListWord.updateUI();
         //TODO
         /* Wordlist refresh after each time a word is added or removed to not throws errors
 
 
          */
-        DefaultListModel<String> arr = new DefaultListModel<>();
+        ArrayList<String> arr = new ArrayList<>();
 
         for(Word word : mainDictionary.getWordArrayList() ) {
-            arr.addElement(word.getText());
+            arr.add(word.getText());
         }
 
-        ListWord = new JList<String>(arr);
+        ListWord = new JList<String>(arr.toArray(new String[0]));
     }
 
     public void ShowListMenu() {
