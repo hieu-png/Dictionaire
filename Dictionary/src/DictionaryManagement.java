@@ -50,54 +50,61 @@ public class DictionaryManagement {
 
     }
 
-    public ArrayList<String> insertFromFileAdvanced() throws IOException {
+    public ArrayList<String> insertFromFileAdvanced() {
 
         //StringBuilder s = new StringBuilder();
-        BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\pc\\IdeaProjects\\DictionaryApp\\anhviet109K.txt"));
-        ArrayList<String> words = new ArrayList<>();
-        String f;
-        f = in.readLine();
-        f = f.substring(1);
-        StringBuilder word = new StringBuilder();
-        word.append(f).append("\n");
+        BufferedReader in;
+        try {
+            in = new BufferedReader(new FileReader(System.getProperty("user.dir") +
+                    "\\Dictionary\\anhviet109K.txt"));
+            ArrayList<String> words = new ArrayList<>();
+            String f;
+            f = in.readLine();
+            f = f.substring(1);
+            StringBuilder word = new StringBuilder();
+            word.append(f).append("\n");
 
-        StringBuilder NextText = new StringBuilder();
-        while (f != null) {
+            StringBuilder NextText = new StringBuilder();
+            while (f != null) {
 
-            while (true) {
-                if (NextText.length() > 0) {
-                    word.append(NextText).append("\n");
-                    NextText = new StringBuilder();
-                    //System.out.println("-----------------------------word");
-                }
+                while (true) {
+                    if (NextText.length() > 0) {
+                        word.append(NextText).append("\n");
+                        NextText = new StringBuilder();
+                        //System.out.println("-----------------------------word");
+                    }
 
-                f = in.readLine();
+                    f = in.readLine();
 
 
-                //System.out.print(f+'\n');
-                if (f != null)
-                    if (!f.isEmpty() && f.charAt(0) == '@') {
-                        NextText.append(f);
-                        //System.out.println("---------------------"+NextText);
+                    //System.out.print(f+'\n');
+                    if (f != null)
+                        if (!f.isEmpty() && f.charAt(0) == '@') {
+                            NextText.append(f);
+                            //System.out.println("---------------------"+NextText);
 
+                            break;
+                        }
+
+                    word.append(f).append("\n");
+
+                    if (f == null) {
+                        word = new StringBuilder(word.substring(0, word.length() - 5));//substring de xoa \n va null khi f chay den cuoi cung
                         break;
                     }
 
-                word.append(f).append("\n");
-
-                if (f == null) {
-                    word = new StringBuilder(word.substring(0, word.length() - 5));//substring de xoa \n va null khi f chay den cuoi cung
-                    break;
                 }
+                //System.out.print(word);
+                words.add(word.toString());
+                word = new StringBuilder();
+
 
             }
-            //System.out.print(word);
-            words.add(word.toString());
-            word = new StringBuilder();
-
-
+            return words;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return words;
+        return new ArrayList<>();
     }
 
     public Dictionary WordFromBigFile(ArrayList<String> words) {
@@ -112,15 +119,13 @@ public class DictionaryManagement {
         return dictionary;
     }
 
-    public static void main(String[] args) throws IOException {
-        try {
+    public static void main(String[] args)   {
+
             DictionaryManagement d = new DictionaryManagement();
             ArrayList<String> words = d.insertFromFileAdvanced();
             d.WordFromBigFile(words);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
     }
 
 

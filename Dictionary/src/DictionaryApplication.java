@@ -105,11 +105,9 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         DictionaryManagement d = new DictionaryManagement();
 
         ArrayList<String> words = null;
-        try {
+
             words = d.insertFromFileAdvanced();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
 
         assert words != null;
         mainDictionary = d.WordFromBigFile(words);

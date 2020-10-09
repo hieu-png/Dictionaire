@@ -5,21 +5,28 @@ public class Word {
     //Word definition in vietnamese.
     private String definition;
 
-
-    Word() {
+    private String pronunciation;
+    public Word() {
         this.definition="null";
         this.text="null";
     }
-    Word (String text, String definition) {
+    public Word (String text, String definition) {
         //text.charAt(0)
 
         this.text = text;
-        this.definition= definition;
+        this.definition = definition;
     }
-    Word (Word word) {
+
+    public Word (String text, String definition, String pronunciation) {
+        this.text = text;
+        this.definition = definition;
+        this.pronunciation = pronunciation;
+    }
+
+    public Word (Word word) {
         this.text= word.text;
         this.definition=word.definition;
-        //this.pronunciation = word.pronunciation;
+        this.pronunciation = word.pronunciation;
         //this.example = word.example;
         //this.type = word.type;
     }
@@ -32,6 +39,9 @@ public class Word {
         return definition;
     }
 
+    public String getPronunciation() {
+        return pronunciation;
+    }
 
     //List all the definition on the same line.
     public String getDefinitionSameLine() {
@@ -61,6 +71,10 @@ public class Word {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public void setPronunciation(String pronunciation) {
+        this.pronunciation = pronunciation;
     }
 
     //Hieu 28/09--------------------------------------
