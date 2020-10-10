@@ -9,6 +9,13 @@ public class Dictionary {
 
     }
 
+    public String[] wordTextArray() {
+        String [] textWordArray = new String[wordCount()];
+        for (int i = 0; i < wordCount(); i++) {
+            textWordArray[i] = wordByIndex(i).getText();
+        }
+        return  textWordArray;
+    }
 
     public ArrayList<Word> getWordArrayList() {
         return wordArrayList;
@@ -33,6 +40,25 @@ public class Dictionary {
     public int wordCount(){
         return wordArrayList.size();
     }
+
+    public String[] searchFilter(String wordToSearch) {
+        wordToSearch = wordToSearch.toLowerCase();
+        ArrayList<String> filteredWord = new ArrayList<>();
+        for(Word word : wordArrayList) {
+
+            if(wordToSearch.length() > word.getText().length()) continue;
+            Boolean same = true;
+            for(int i = 0; i < wordToSearch.length(); i++) {
+                if(wordToSearch.charAt(i) != word.getText().charAt(i))
+                    same = false;
+            }
+            if(same) {
+                filteredWord.add(word.getText());
+            }
+        }
+        return filteredWord.toArray(new String[0]);
+    }
+
     //------------MC Danh------------23-9-----------------------------------
     public void removeWord(String wordText) {
         DictionaryManagement d = new DictionaryManagement();
