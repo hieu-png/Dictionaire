@@ -16,7 +16,7 @@ public class Dictionary {
 
     public void addWord(Word word){
         wordArrayList.add(new Word(word));
-        System.out.println("Word added: " + word.getText());
+        //System.out.println("Word added: " + word.getText());
 
     }
 

@@ -4,10 +4,6 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//import javax.swing.text.DefaultCaret;
-//import java.awt.event.ActionEvent;
-//import java.io.File;
-
 public class DictionaryApplication extends DictionaryAppAction implements ActionListener {
 
     private JFrame mainFrame;
@@ -18,8 +14,9 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     protected JMenuItem addWordMenu, removeWordMenu;//, copyWord, importWordSimple, importWordAdvanced;
 
 
-    final int width = 800, height = 600, outerMargin = 20, wordListWidth = 150;
-    final int buttonSizeSquare = 40;
+    final int width = 800;
+    final int height = 600;
+    final int wordListWidth = 150;
     private JTextArea WordDefineArea;
     private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
 
@@ -27,8 +24,8 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     private JTextField searchBar;
     private String[] textWord;
     private JScrollPane ListScrollPane = new JScrollPane(null);
-
-
+    private DictionaryManagement dictionaryManagement;
+    private ArrayList<String> words = null;
 
     public DictionaryApplication() {
 
@@ -43,7 +40,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setSize(width, height);
         mainFrame.getContentPane().setBackground(Color.RED);
 
-        Image image = loadImageFromFile(imageFolderPath + "Blue_Background.png", width, height);
+        Image image = loadImageFromFile(imageFolderPath + "Blue_background.png", width, height);
 
         mainFrame.setContentPane(new ImagePanel(image));
 
@@ -84,80 +81,60 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     }
 
     public void actionPerformed(ActionEvent e) {
+        String[] s = {};
         if (e.getSource() == addWordMenu) {
             addWordWindow(mainDictionary);
+            UpdateList(s,0);
 
-            UpdateList();
 
 
         } else if (e.getSource() == removeWordMenu) {
             if (ListWord.getSelectedIndex() != -1) {
                 removeWord(mainDictionary, ListWord.getSelectedIndex());
+                UpdateList(s,0);
 
-                UpdateList();
             }
         }
 
     }
 
-    public void UI(DictionaryApplication dictionaryApplication) {
-
-        mainFrame.setLocationRelativeTo(null);
-        mainFrame.setResizable(false);
-
-        DictionaryManagement d = new DictionaryManagement();
-
-        ArrayList<String> words = null;
-
-            words = d.insertFromFileAdvanced();
-
-
-        assert words != null;
-        mainDictionary = d.WordFromBigFile(words);
-
+    public void UpdateTextWord(){
+        mainDictionary = dictionaryManagement.WordFromBigFile(words);
         int N = mainDictionary.wordCount();
-
-        //rqt
         textWord = new String[N];
         for (int i = 0; i < N; i++) {
             textWord[i] = mainDictionary.wordByIndex(i).getText();
             //System.out.println(textWord[i]);
         }
-        dictionaryApplication.ShowListMenu(textWord);
-        SearchBar(dictionaryApplication, textWord);
+    }
+    public void UI(DictionaryApplication dictionaryApplication) {
+
+        mainFrame.setLocationRelativeTo(null);
+        mainFrame.setResizable(false);
+        ImageIcon icon = new ImageIcon(imageFolderPath + "\\2.png");
+        mainFrame.setIconImage(icon.getImage());
+        dictionaryManagement = new DictionaryManagement();
+
+
+
+            words = dictionaryManagement.insertFromFileAdvanced();
+
+
+        assert words != null;
+
+
+
+        //rqt
+        UpdateTextWord();
+        UpdateList(textWord,1);
+        SearchBar( textWord);
         dictionaryApplication.ShowWordDefinition();
         mainFrame.setVisible(true);
     }
 
-    public void ShowListMenu(String[] s) {
-        ListScrollPane.remove(ListWord);
-        mainFrame.remove(ListScrollPane);
-        ListWord = new JList<>(s);
-
-        ListWord.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        ListWord.setVisibleRowCount(20);
-        Font font = new Font("Arial", Font.BOLD, 13);
-        ListWord.setFont(font);
-        //action for defineArea
-        ListWord.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                String wordNewAfterFilter = ListWord.getSelectedValue();
-                int i = DictionaryManagement.dictionaryLookup(mainDictionary.getWordArrayList(),wordNewAfterFilter);
-                WordDefineArea.setText(mainDictionary.getWordArrayList().get(i).getText() + "  " + mainDictionary.getWordArrayList().get(i).getDefinition());
-            }
-        });
-        ListScrollPane = new JScrollPane(ListWord);
-        ListScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        mainFrame.add(ListScrollPane);
-        ListScrollPane.setBounds(27, 50, wordListWidth, (int) ((double) height * 0.8));
-
-        mainFrame.setVisible(true);
-    }
-
-    public void SearchBar(DictionaryApplication dictionaryApplication, String[] a) {
+    public void SearchBar(String[] a) {
         searchBar = new HintTextField("Search...");
-        searchBar.setOpaque(false);
+        searchBar.setOpaque(true);
         searchBar.setForeground(Color.DARK_GRAY);
 
 
@@ -184,15 +161,15 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
                 //thay đổi nội dung Jlist
                 //add lại Jlist vào
 
-                dictionaryApplication.Search(a, dictionaryApplication);
+                Search(a);
                 mainFrame.setVisible(true);
             }
         });
 
-        searchBar.setBounds(50, 10, width - 100, 40);
+        searchBar.setBounds(27, 9, wordListWidth, 40);
     }
 
-    public void Search(String[] words, DictionaryApplication dictionaryApplication) {
+    public void Search(String[] words) {
         String s = searchBar.getText();
         if (!s.equals("")) {
 
@@ -205,36 +182,44 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
                 FilteredWords1[i] = FilteredWords.get(i);
 
             }
-
-
-            dictionaryApplication.ShowListMenu(FilteredWords1);
+            UpdateList(FilteredWords1,1);
+        }
+        else{
+            UpdateList(textWord,0);
         }
     }
-    public void UpdateList() {
+
+    public void UpdateList(String[] s, int flag) {
 
         //ListWord.updateUI();
         //TODO
         /* Wordlist refresh after each time a word is added or removed to not throws errors
+        //flag
          */
-
-        int N = mainDictionary.wordCount();
-        textWord = new String[N];
-        for (int i = 0; i < N; i++) {
-            textWord[i] = mainDictionary.wordByIndex(i).getText();
+        //flag de show filteredWord
+        if (flag == 1) {
+            ListWord = new JList<>(s);
+        } else {
+            int N = mainDictionary.wordCount();
+            textWord = new String[N];
+            for (int i = 0; i < N; i++) {
+                textWord[i] = mainDictionary.wordByIndex(i).getText();
+            }
+            ListWord = new JList<>(textWord);
         }
         ListScrollPane.remove(ListWord);
         mainFrame.remove(ListScrollPane);
-        ListWord = new JList<>(textWord);
+
 
         ListWord.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         ListWord.setVisibleRowCount(20);
-        Font font = new Font("Arial", Font.BOLD, 13);
+        Font font = new Font("Arial", Font.BOLD, 14);
         ListWord.setFont(font);
         //action for defineArea
         ListWord.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String wordNewAfterFilter = ListWord.getSelectedValue();
-                int i = DictionaryManagement.dictionaryLookup(mainDictionary.getWordArrayList(),wordNewAfterFilter);
+                int i = DictionaryManagement.dictionaryLookup(mainDictionary.getWordArrayList(), wordNewAfterFilter);
                 WordDefineArea.setText(mainDictionary.getWordArrayList().get(i).getText() + "  " + mainDictionary.getWordArrayList().get(i).getDefinition());
             }
         });
@@ -255,13 +240,13 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         Font font = new Font("Arial", Font.BOLD, 14);
         WordDefineArea.setFont(font);
-        JScrollPane outputScrollPane = new JScrollPane(WordDefineArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+        JScrollPane outputScrollPane = new JScrollPane(WordDefineArea,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         mainFrame.add(outputScrollPane);
         outputScrollPane.setBounds(180, 50, 550, height - 120);
     }
-    //Anh danh moi them gi vao
 
 
     public static void Start() {
