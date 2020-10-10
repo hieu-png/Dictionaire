@@ -7,12 +7,13 @@ import java.util.ArrayList;
 public class DictionaryApplication extends DictionaryAppAction implements ActionListener {
 
     private JFrame mainFrame;
-    private Dictionary mainDictionary;
+    private Dictionary mainDictionary= new Dictionary();
 
     protected JMenuBar mainMenuBar;
     protected JMenu mainMenu;
     protected JMenuItem addWordMenu, removeWordMenu;//, copyWord, importWordSimple, importWordAdvanced;
 
+    SqlDataManagement sdm = new SqlDataManagement();
 
     final int width = 800;
     final int height = 600;
@@ -25,60 +26,16 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     private String[] textWord;
     private JScrollPane ListScrollPane = new JScrollPane(null);
     private DictionaryManagement dictionaryManagement;
-    private ArrayList<String> words = null;
+    //private ArrayList<String> words = null;
 
     public DictionaryApplication() {
 
         prepareMenu();
         prepareGUI();
+        sqlInit();
     }
 
 
-    public void prepareGUI() {
-        mainFrame = new JFrame("Dictionary 12.0");
-
-        mainFrame.setSize(width, height);
-        mainFrame.getContentPane().setBackground(Color.RED);
-
-        Image image = loadImageFromFile(imageFolderPath + "Blue_background.png", width, height);
-
-        mainFrame.setContentPane(new ImagePanel(image));
-
-
-        mainFrame.setLayout(null);
-        mainFrame.addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent windowEvent) {
-                System.exit(0);
-            }
-        });
-
-        JPanel controlPanel = new JPanel();
-        controlPanel.setLayout(null);
-
-        mainFrame.add(ListScrollPane);
-
-        mainFrame.setJMenuBar(mainMenuBar);
-        mainFrame.add(controlPanel);
-        mainFrame.setVisible(true);
-    }
-
-
-    public void prepareMenu() {
-        mainMenu = new JMenu("Edit");
-        mainMenuBar = new JMenuBar();
-        addWordMenu = new JMenuItem("Add a new word");
-        addWordMenu.addActionListener(this);
-
-
-        removeWordMenu = new JMenuItem("Remove selected word");
-        removeWordMenu.addActionListener(this);
-
-
-        mainMenu.add(addWordMenu);
-        mainMenu.add(removeWordMenu);
-
-        mainMenuBar.add(mainMenu);
-    }
 
     public void actionPerformed(ActionEvent e) {
         String[] s = {};
@@ -99,7 +56,8 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     }
 
     public void UpdateTextWord(){
-        mainDictionary = dictionaryManagement.WordFromBigFile(words);
+        //mainDictionary = dictionaryManagement.WordFromBigFile(mainDictionary.getWordArrayList());
+
         int N = mainDictionary.wordCount();
         textWord = new String[N];
         for (int i = 0; i < N; i++) {
@@ -107,20 +65,17 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
             //System.out.println(textWord[i]);
         }
     }
+
     public void UI(DictionaryApplication dictionaryApplication) {
 
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setResizable(false);
         ImageIcon icon = new ImageIcon(imageFolderPath + "\\2.png");
         mainFrame.setIconImage(icon.getImage());
-        dictionaryManagement = new DictionaryManagement();
 
 
 
-            words = dictionaryManagement.insertFromFileAdvanced();
 
-
-        assert words != null;
 
 
 
@@ -219,8 +174,11 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         ListWord.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 String wordNewAfterFilter = ListWord.getSelectedValue();
-                int i = DictionaryManagement.dictionaryLookup(mainDictionary.getWordArrayList(), wordNewAfterFilter);
-                WordDefineArea.setText(mainDictionary.getWordArrayList().get(i).getText() + "  " + mainDictionary.getWordArrayList().get(i).getDefinition());
+                int i = DictionaryManagement.dictionaryLookup(
+                        mainDictionary.getWordArrayList(), wordNewAfterFilter);
+
+                WordDefineArea.setText(mainDictionary.getWordArrayList().get(i).getText() +
+                        "  " + mainDictionary.getWordArrayList().get(i).getDefinitionLine());
             }
         });
         ListScrollPane = new JScrollPane(ListWord);
@@ -232,6 +190,18 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setVisible(true);
     }
 
+
+
+
+
+    public static void Start() {
+        DictionaryApplication dictionaryApplication = new DictionaryApplication();
+        dictionaryApplication.UI(dictionaryApplication);
+    }
+
+    public static void main(String[] args) {
+        Start();
+    }
 
     public void ShowWordDefinition() {
         WordDefineArea = new JTextArea(1, 10);
@@ -248,14 +218,58 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         outputScrollPane.setBounds(180, 50, 550, height - 120);
     }
 
+    public void prepareMenu() {
+        mainMenu = new JMenu("Edit");
+        mainMenuBar = new JMenuBar();
+        addWordMenu = new JMenuItem("Add a new word");
+        addWordMenu.addActionListener(this);
 
-    public static void Start() {
-        DictionaryApplication dictionaryApplication = new DictionaryApplication();
-        dictionaryApplication.UI(dictionaryApplication);
+
+        removeWordMenu = new JMenuItem("Remove selected word");
+        removeWordMenu.addActionListener(this);
+
+
+        mainMenu.add(addWordMenu);
+        mainMenu.add(removeWordMenu);
+
+        mainMenuBar.add(mainMenu);
     }
 
-    public static void main(String[] args) {
-        Start();
+    public void prepareGUI() {
+        mainFrame = new JFrame("Dictionary 12.0");
+
+        mainFrame.setSize(width, height);
+        mainFrame.getContentPane().setBackground(Color.RED);
+
+        Image image = loadImageFromFile(imageFolderPath + "Blue_background.png", width, height);
+
+        mainFrame.setContentPane(new ImagePanel(image));
+
+
+        //Do what when close window
+        mainFrame.setLayout(null);
+        mainFrame.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent windowEvent) {
+                System.exit(0);
+            }
+        });
+
+        JPanel controlPanel = new JPanel();
+        controlPanel.setLayout(null);
+
+        mainFrame.add(ListScrollPane);
+
+        mainFrame.setJMenuBar(mainMenuBar);
+        mainFrame.add(controlPanel);
+        mainFrame.setVisible(true);
+    }
+
+    public void sqlInit() {
+        sdm.connect();
+        //sdm.createTable();
+        //sdm.insertFromFileDirect(System.getProperty("user.dir") +
+        //        "\\Dictionary\\anhviet109K.txt");
+        sdm.insertToDictionary(mainDictionary);
     }
 
 
