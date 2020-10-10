@@ -9,12 +9,6 @@ public class Dictionary {
 
     }
 
-    public void addWord(String wordText, String wordDef, String wordPronunciation) {
-
-        wordArrayList.add(new Word(wordText, wordDef, wordPronunciation));
-        System.out.println("Word added: " + wordText);
-
-    }
 
     public ArrayList<Word> getWordArrayList() {
         return wordArrayList;

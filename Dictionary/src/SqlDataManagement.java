@@ -9,7 +9,7 @@ public class SqlDataManagement {
 
     private Connection connection = null;
     private Statement statement = null;
-    //word_text and word_def and word_pron
+    //word_text and word_def
 
     String fileName = "dictionary.db";
     String url = "jdbc:sqlite:" +
@@ -36,7 +36,6 @@ public class SqlDataManagement {
                     " IF NOT EXISTS" +
                     " words " + //A table named words
                     "(word_text TEXT," + //This column store the literal text
-                    " word_pron TEXT," +  //This column store the pronunciation
                     " word_def TEXT);";  //This column store the definition
             createStatements.executeUpdate(sqlCreate);
 
@@ -49,7 +48,9 @@ public class SqlDataManagement {
     public void insertData(String word, String def) {
         //String sqlCommand = "INSERT INTO words(WORD_TEXT STRING, WORD_DEF STRING)  VALUES('" + word + "', '" + def + "')";
         word = word.replaceAll("'", "\\\''");
-         executeCommand( String.format("INSERT INTO words VALUES('%s','%s')",
+        def = def.replaceAll("'", "\\\''");
+
+        executeCommand( String.format("INSERT INTO words VALUES('%s','%s')",
                 word,def));
 
     }
@@ -60,8 +61,8 @@ public class SqlDataManagement {
         pronunciation = pronunciation.replaceAll("'", "`");
         executeCommand( String.format("INSERT INTO words VALUES('%s','%s','%s')",
                 word, def, pronunciation));
-
     }
+
 
     public void executeCommand(String command) {
         try  (PreparedStatement preparedStatement = connection.prepareStatement(command)) {
@@ -74,40 +75,54 @@ public class SqlDataManagement {
 
     public void insertFromDictionary(Dictionary dictionary) {
         for(Word word : dictionary.getWordArrayList()) {
-            insertData(word.getText(), word.getDefinition(), word.getPronunciation());
+            insertData(word.getText(), word.getDefinition());
             System.out.println(word.getText() + " has been added to database");
 
         }
     }
     public void insertToDictionary(Dictionary dictionary) {
-
+        try(Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery("SELECT word_text, word_def from words") ){
+            while(resultSet.next()) {
+                dictionary.addWord(resultSet.getString("word_text"),
+                        resultSet.getString("word_def"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void insertFromFileAdvanced(Dictionary d, String path)   {
         BufferedReader in = null;
         try {
             in = new BufferedReader(new FileReader(path));
+
             String bufferString;
+
             String wordText = "";
             String wordDef  = "";
             String wordPronunciation = "";
+
             while((bufferString = in.readLine()) != null) {
 
                 if (!bufferString.isEmpty()) {
 
                     if (bufferString.charAt(0) == '@') {
+                        //End if a new word is found and word definition isn't empty
                         if (wordDef != "") {
-                            d.addWord(wordText, wordDef, wordPronunciation);
+                            wordPronunciation += wordDef;
+                            d.addWord(wordText, wordPronunciation);
                             // System.out.println("New word added: " + wordText + "::" + wordDef);
                             wordDef = "";
                             wordPronunciation = "";
                         }
 
-                        int endPoint = bufferString.indexOf(" /");
+                        int endPoint = bufferString.indexOf("/");
                         if (endPoint == -1) {
                             endPoint = bufferString.length();
                         } else {
                             wordPronunciation = bufferString.substring(endPoint, bufferString.length());
+                            System.out.println(wordPronunciation);
                         }
                         wordText = bufferString.substring(1,endPoint);
 
@@ -120,7 +135,7 @@ public class SqlDataManagement {
                 }
             }
             //Add the last word
-            d.addWord(wordText, wordDef, wordPronunciation);
+            d.addWord(wordText, wordDef);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -143,7 +158,6 @@ public class SqlDataManagement {
         ResultSet resultSet = stmt.executeQuery("SELECT word_text, word_def from words") ){
             while(resultSet.next()) {
                 System.out.println(resultSet.getString("word_text")+ "\t" +
-                                    resultSet.getString("word_pron") + "\t" +
                                     resultSet.getString("word_def"));
             }
 
@@ -170,6 +184,7 @@ public class SqlDataManagement {
         sdm.insertFromDictionary(dictionary);
 
         sdm.printDictionary();
+
         //sdm.insertData("Apple","tao");
 
 
