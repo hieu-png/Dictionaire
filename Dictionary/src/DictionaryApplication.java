@@ -21,7 +21,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     final int width = 800, height = 600, outerMargin = 20, wordListWidth = 150;
     final int buttonSizeSquare = 40;
     private JTextArea WordDefineArea;
-    private final String imageFolderPath = System.getProperty("user.dir");
+    private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
 
     private JList<String> ListWord = new JList<>((String[]) null);
     private JTextField searchBar;
@@ -43,7 +43,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setSize(width, height);
         mainFrame.getContentPane().setBackground(Color.RED);
 
-        Image image = loadImageFromFile(imageFolderPath + "\\Blue_Background.png", width, height);
+        Image image = loadImageFromFile(imageFolderPath + "Blue_Background.png", width, height);
 
         mainFrame.setContentPane(new ImagePanel(image));
 
@@ -261,6 +261,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.add(outputScrollPane);
         outputScrollPane.setBounds(180, 50, 550, height - 120);
     }
+    //Anh danh moi them gi vao
 
 
     public static void Start() {
