@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+
 public class DictionaryApplication extends DictionaryAppAction implements ActionListener {
 
     private JFrame mainFrame;
@@ -16,6 +17,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     final int width = 800;
     final int height = 600;
     final int wordListWidth = 150;
+    private JButton speakButton;
     private TextAreaWithImage WordDefineArea;
     private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
 
@@ -23,6 +25,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     private JTextField searchBar;
     private JScrollPane ListScrollPane = new JScrollPane(null);
     private DictionaryManagement dictionaryManagement;
+    private textToSpeech speaker = new textToSpeech();
 
     int newlyAddedWordIndex = -1;
     public DictionaryApplication() {
@@ -229,9 +232,25 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         mainFrame.add(ListScrollPane);
 
+
+        SpeakButton();
+        mainFrame.add(speakButton);
         mainFrame.setJMenuBar(mainMenuBar);
         mainFrame.add(controlPanel);
         mainFrame.setVisible(true);
+    }
+
+    public void SpeakButton() {
+        speakButton = new JButton();
+        speakButton.setText("ACT");
+        speakButton.setBounds(180,10,40,40);
+        speakButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(ListWord.getSelectedIndex() != -1)
+                speaker.speakWord(ListWord.getSelectedValue());
+            }
+        });
     }
 
     public void sqlInit() {
