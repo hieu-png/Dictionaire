@@ -4,7 +4,7 @@ public class Dictionary {
     ArrayList<Word> wordArrayList = new ArrayList<Word>();
     public void addWord(String wordText, String wordDef){
 
-        wordArrayList.add(new Word(wordText, wordDef));
+        wordArrayList.add(new Word(wordText.toLowerCase(), wordDef));
         System.out.println("Word added: " + wordText);
 
     }
@@ -14,16 +14,7 @@ public class Dictionary {
     public void sort() {
         wordArrayList.sort(this::compareWord);
     }
-    /*
-    public void addWordSpecial(String wordText, String wordPronunciation ,String wordDef) {
-        int i;
-        if((i = findWord(wordText)) != -1) {
-            wordByIndex(i).addDefinition(wordDef);
-        } else {
-            addWord(wordText,
-            "/" + wordPronunciation + "/" + "- " + wordDef);
-        }
-    }*/
+
 
     public String[] wordTextArray() {
         String [] textWordArray = new String[wordCount()];
