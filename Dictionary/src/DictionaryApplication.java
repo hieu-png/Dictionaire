@@ -1,13 +1,11 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class DictionaryApplication extends DictionaryAppAction implements ActionListener {
 
     private JFrame mainFrame;
-    private Dictionary mainDictionary= new Dictionary();
+    private Dictionary mainDictionary = new Dictionary();
 
     protected JMenuBar mainMenuBar;
     protected JMenu mainMenu;
@@ -36,25 +34,22 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     }
 
 
-
     public void actionPerformed(ActionEvent e) {
         String[] s = {};
         if (e.getSource() == addWordMenu) {
             addWordWindow(mainDictionary);
-            UpdateList(s,0);
-
+            UpdateList(s, 0);
 
 
         } else if (e.getSource() == removeWordMenu) {
             if (ListWord.getSelectedIndex() != -1) {
-                removeWord(mainDictionary, ListWord.getSelectedIndex());
-                UpdateList(s,0);
+                removeWord(mainDictionary, DictionaryManagement.dictionaryLookup(mainDictionary.getWordArrayList(),ListWord.getSelectedValue()));
+                UpdateList(s, 0);
 
             }
         }
 
     }
-
 
 
     public void UI(DictionaryApplication dictionaryApplication) {
@@ -65,13 +60,8 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setIconImage(icon.getImage());
 
 
-
-
-
-
-
         //rqt
-        UpdateList(mainDictionary.wordTextArray(),1);
+        UpdateList(mainDictionary.wordTextArray(), 1);
         SearchBar();
         dictionaryApplication.ShowWordDefinition();
         mainFrame.setVisible(true);
@@ -105,7 +95,9 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
                 //gỡ Jlist(ListWord) cũ
                 //thay đổi nội dung Jlist
                 //add lại Jlist vào
-
+//                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+//
+//                }
                 Search();
                 mainFrame.setVisible(true);
             }
@@ -113,44 +105,24 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         searchBar.setBounds(27, 9, wordListWidth, 40);
     }
-
+//rqt
     public void Search() {
         String s = searchBar.getText();
         if (!s.equals("")) {
-
-            /*
-            ArrayList<String> FilteredWords = new ArrayList<>();
-
-
-            DictionaryManagement.searchFilter(s, words, FilteredWords);
-
-            String[] FilteredWords1 = new String[FilteredWords.size()];
-            for (int i = 0; i < FilteredWords.size(); i++) {
-                FilteredWords1[i] = FilteredWords.get(i);
-
-            }
-
-
-            UpdateList(FilteredWords1,1);
-            */
-
-            //String[] FilteredWord;
-            UpdateList(mainDictionary.searchFilter(s),1);
-
-        }
-        else{
-            UpdateList(mainDictionary.wordTextArray(),0);
+            UpdateList(mainDictionary.searchFilter(s), 1);
+        } else {
+            UpdateList(mainDictionary.wordTextArray(), 0);
         }
     }
 
     public void UpdateList(String[] s, int flag) {
 
-        //ListWord.updateUI();
+
         //TODO
         // Wordlist refresh after each time a word is added or removed to not throws errors
 
 
-        //flag de show filteredWord
+        //flag to show filteredWord
         if (flag == 1) {
             ListWord = new JList<>(s);
         } else {
@@ -183,9 +155,6 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         mainFrame.setVisible(true);
     }
-
-
-
 
 
     public static void Start() {
