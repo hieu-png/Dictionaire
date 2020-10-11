@@ -8,6 +8,22 @@ public class Dictionary {
         System.out.println("Word added: " + wordText);
 
     }
+    public int compareWord(Word a, Word b) {
+        return a.getText().compareTo(b.getText());
+    }
+    public void sort() {
+        wordArrayList.sort(this::compareWord);
+    }
+    /*
+    public void addWordSpecial(String wordText, String wordPronunciation ,String wordDef) {
+        int i;
+        if((i = findWord(wordText)) != -1) {
+            wordByIndex(i).addDefinition(wordDef);
+        } else {
+            addWord(wordText,
+            "/" + wordPronunciation + "/" + "- " + wordDef);
+        }
+    }*/
 
     public String[] wordTextArray() {
         String [] textWordArray = new String[wordCount()];
@@ -58,7 +74,14 @@ public class Dictionary {
         }
         return filteredWord.toArray(new String[0]);
     }
-
+    public int findWord(String wordToFind) {
+        for(int i = 0; i < wordArrayList.size(); i++) {
+            if(wordByIndex(i).getText().equals(wordToFind)) {
+                return i;
+            }
+        }
+        return -1;
+    }
     //------------MC Danh------------23-9-----------------------------------
     public void removeWord(String wordText) {
         DictionaryManagement d = new DictionaryManagement();

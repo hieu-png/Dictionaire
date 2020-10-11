@@ -32,6 +32,7 @@ public class Word {
     }
 
 
+
     //List all the definition on the same line.
     public String getDefinitionSameLine() {
         String tempDef = definition;
@@ -50,7 +51,7 @@ public class Word {
             this.definition = definition;
         } else {
 
-            this.definition += "-" + definition;
+            this.definition += "- " + definition;
         }
     }
 

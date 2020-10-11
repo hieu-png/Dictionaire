@@ -63,7 +63,7 @@ public class SqlDataManagement {
                 word, def, pronunciation));
     }
 
-
+    //Don't have to try catch everytime to do a command, so inflexible...
     public void executeCommand(String command) {
         try  (PreparedStatement preparedStatement = connection.prepareStatement(command)) {
             preparedStatement.executeUpdate();
@@ -151,6 +151,39 @@ public class SqlDataManagement {
 
     }
 
+    public void delete(String wordText) {
+        String command = "DELETE FROM words WHERE word_text = ?";
+
+        try (
+             PreparedStatement towa = connection.prepareStatement(command)) {
+
+            // set the corresponding param
+            towa.setString(1, wordText);
+            // execute the delete statement
+            towa.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void updateWord (String wordText, String wordDef){
+        String command = "UPDATE words SET word_def = ? " +
+                "WHERE word_text = ?" ;
+        try (
+                PreparedStatement towa = connection.prepareStatement(command)) {
+
+            // set the corresponding param
+            towa.setString(1, wordDef);
+            towa.setString(2, wordText);
+
+            // execute the delete statement
+            towa.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
     public void insertFromFileDirect(String path)   {
         BufferedReader in = null;

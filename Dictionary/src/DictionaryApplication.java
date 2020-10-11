@@ -5,7 +5,7 @@ import java.awt.event.*;
 public class DictionaryApplication extends DictionaryAppAction implements ActionListener {
 
     private JFrame mainFrame;
-    private Dictionary mainDictionary = new Dictionary();
+    private final Dictionary mainDictionary = new Dictionary();
 
     protected JMenuBar mainMenuBar;
     protected JMenu mainMenu;
@@ -16,16 +16,15 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     final int width = 800;
     final int height = 600;
     final int wordListWidth = 150;
-    private JTextArea WordDefineArea;
+    private TextAreaWithImage WordDefineArea;
     private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
 
     private JList<String> ListWord = new JList<>((String[]) null);
     private JTextField searchBar;
-    //private String[] textWord;
     private JScrollPane ListScrollPane = new JScrollPane(null);
     private DictionaryManagement dictionaryManagement;
-    //private ArrayList<String> words = null;
 
+    int newlyAddedWordIndex = -1;
     public DictionaryApplication() {
 
         sqlInit();
@@ -35,10 +34,13 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
 
     public void actionPerformed(ActionEvent e) {
+        //Them cai nay lam gi the???
         String[] s = {};
+        //
         if (e.getSource() == addWordMenu) {
             addWordWindow(mainDictionary);
             UpdateList(s, 0);
+            ListWord.setSelectedIndex(newlyAddedWordIndex);
 
 
         } else if (e.getSource() == removeWordMenu) {
@@ -56,10 +58,10 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         mainFrame.setLocationRelativeTo(null);
         mainFrame.setResizable(false);
-        ImageIcon icon = new ImageIcon(imageFolderPath + "\\2.png");
-        mainFrame.setIconImage(icon.getImage());
 
 
+        Image Icon = Toolkit.getDefaultToolkit().getImage(imageFolderPath + "bookIcon.png" );
+        mainFrame.setIconImage(Icon);
         //rqt
         UpdateList(mainDictionary.wordTextArray(), 1);
         SearchBar();
@@ -70,7 +72,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     public void SearchBar() {
         searchBar = new HintTextField("Search...");
         searchBar.setOpaque(true);
-        searchBar.setForeground(Color.DARK_GRAY);
+        searchBar.setForeground(Color.LIGHT_GRAY);
 
 
         Font f = new Font("Arial", Font.BOLD, 20);
@@ -109,8 +111,13 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     public void Search() {
         String s = searchBar.getText();
         if (!s.equals("")) {
+            searchBar.setForeground(Color.BLACK);
+
             UpdateList(mainDictionary.searchFilter(s), 1);
         } else {
+
+            searchBar.setForeground(Color.LIGHT_GRAY);
+
             UpdateList(mainDictionary.wordTextArray(), 0);
         }
     }
@@ -167,11 +174,11 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     }
 
     public void ShowWordDefinition() {
-        WordDefineArea = new JTextArea(1, 10);
+        WordDefineArea = new TextAreaWithImage(1, 10, imageFolderPath + "textBackground.png");
         WordDefineArea.setEditable(false);
         WordDefineArea.setCaretPosition(0);
 
-        Font font = new Font("Arial", Font.BOLD, 14);
+        Font font = new Font("Arial", Font.BOLD, 16);
         WordDefineArea.setFont(font);
         JScrollPane outputScrollPane = new JScrollPane(WordDefineArea,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -204,7 +211,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setSize(width, height);
         mainFrame.getContentPane().setBackground(Color.RED);
 
-        Image image = loadImageFromFile(imageFolderPath + "Blue_background.png", width, height);
+        Image image = loadImageFromFile(imageFolderPath + "background.png", width, height);
 
         mainFrame.setContentPane(new ImagePanel(image));
 
@@ -233,7 +240,73 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         //sdm.insertFromFileDirect(System.getProperty("user.dir") +
         //        "\\Dictionary\\anhviet109K.txt");
         sdm.insertToDictionary(mainDictionary);
+        mainDictionary.sort();
     }
 
+    public void removeWord(Dictionary dictionary, int index) {
+        sdm.delete(dictionary.wordByIndex(index).getText());
+        dictionary.removeWord(index);
+        WordDefineArea.setText("");
+    }
+
+
+    public void addWordWindow(Dictionary dictionary) {
+
+        JTextField text = new JTextField(5);
+        JTextField definition = new JTextField(5);
+
+        JTextField pronunciation = new JTextField(5);
+        //Text and Definition text field component must have the same name
+        Object[] components = {
+                new JLabel("Text"), text,
+                new JLabel("Pronunciation"), pronunciation,
+                new JLabel("Definition"), definition
+        };
+
+        //Only cancel when press cancel.
+        while(true) {
+            int addWordResult = JOptionPane.showConfirmDialog(null, components,
+                    "Enter the word's properties", JOptionPane.OK_CANCEL_OPTION);
+
+
+            if (addWordResult == JOptionPane.OK_OPTION) {
+                String wordAddMessage;
+                if (text.getText().isEmpty()) {
+                    wordAddMessage = "Please enter the word";
+                } else if (pronunciation.getText().isEmpty()) {
+                    wordAddMessage = "Please enter the word's pronunciation";
+                } else if (definition.getText().isEmpty()) {
+                    wordAddMessage = "Please enter the word's definition";
+                } else {
+                    int i;
+                    if((i = mainDictionary.findWord(text.getText())) != -1) {
+
+                        mainDictionary.wordByIndex(i).addDefinition(definition.getText());
+                        sdm.updateWord(text.getText(), mainDictionary.wordByIndex(i).getDefinition());
+
+                        wordAddMessage = String.format(
+                                "\"%s\" has got a new definition!",text.getText());
+
+                    } else {
+                        String def = "/" + pronunciation.getText() + "/" + "- " + definition.getText();
+                        sdm.insertData(text.getText(), def);
+                        dictionary.addWord(text.getText(), def);
+                        wordAddMessage = String.format(
+                                "\"%s\" has been success fully added to the dictionary!",text.getText());
+
+                    }
+                    JOptionPane.showMessageDialog(null, wordAddMessage);
+                    mainDictionary.sort();
+                    newlyAddedWordIndex = mainDictionary.findWord(text.getText());
+                    break;
+                }
+                JOptionPane.showMessageDialog(null, wordAddMessage);
+
+
+            } else {
+                break;
+            }
+        }
+    }
 
 }
