@@ -6,8 +6,8 @@ public class Word {
     private String definition;
 
     public Word() {
-        this.definition = "null";
-        this.text = "null";
+        this.definition="null";
+        this.text="null";
     }
     public Word (String text, String definition) {        //text.charAt(0)
 
@@ -43,7 +43,7 @@ public class Word {
     //List all definition per line.
     public String getDefinitionLine() {
         String tempDef = definition;
-        return tempDef.replaceAll("- ","\n- ");
+        return tempDef.replaceAll("-","\n");
     }
 
     public void addDefinition(String definition) {

@@ -185,63 +185,7 @@ public class SqlDataManagement {
         }
     }
 
-    public void insertFromFileDirect(String path)   {
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new FileReader(path));
 
-            String bufferString;
-
-            String wordText = "";
-            String wordDef  = "";
-            String wordPronunciation = "";
-
-            while((bufferString = in.readLine()) != null) {
-
-                if (!bufferString.isEmpty()) {
-
-                    if (bufferString.charAt(0) == '@') {
-                        //End if a new word is found and word definition isn't empty
-                        if (wordDef != "") {
-                            wordPronunciation += wordDef;
-                            insertData(wordText, wordPronunciation);
-                            wordDef = "";
-                            wordPronunciation = "";
-                        }
-
-                        int endPoint = bufferString.indexOf("/");
-                        if (endPoint == -1) {
-                            endPoint = bufferString.length();
-                        } else {
-                            wordPronunciation = bufferString.substring(endPoint, bufferString.length());
-                        }
-                        wordText = bufferString.substring(1,endPoint);
-
-
-                    } else if (bufferString.charAt(0) == '-' && wordText != "") {
-
-                        wordDef += bufferString;
-                    }
-
-                }
-            }
-            //Add the last word
-            wordPronunciation += wordDef;
-            insertData(wordText, wordPronunciation);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-    }
     public void printDictionary() {
         try(Statement stmt = connection.createStatement();
         ResultSet resultSet = stmt.executeQuery("SELECT word_text, word_def from words") ){
@@ -258,17 +202,21 @@ public class SqlDataManagement {
 
     public static void main(String[] args) {
         DictionaryManagement dm = new DictionaryManagement();
-
+      //  DictionaryAppAction daa = new DictionaryApplication();
         SqlDataManagement sdm = new SqlDataManagement();
-
         Dictionary dictionary = new Dictionary();
+        //dictionary = dm.WordFromBigFile(dm.insertFromFileAdvanced());
 
+        //dm.insertFromFile(dictionary,System.getProperty("user.dir") + "\\Dictionary\\SmallScaleTest.txt");
+        sdm.insertFromFileAdvanced(dictionary,
+                System.getProperty("user.dir") + "\\Dictionary\\anhviet109K_lite.txt");
+        DictionaryCommandline dc = new DictionaryCommandline();
+        dc.showAllWords(dictionary);
         sdm.connect();
-        //sdm.createTable();
-        //sdm.insertFromFileDirect(System.getProperty("user.dir") +
-        //        "\\Dictionary\\anhviet109K_lite.txt");
-        sdm.insertToDictionary(dictionary);
-        //sdm.printDictionary();
+        sdm.createTable();
+        sdm.insertFromDictionary(dictionary);
+
+        sdm.printDictionary();
 
         //sdm.insertData("Apple","tao");
 

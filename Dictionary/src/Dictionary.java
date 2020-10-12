@@ -3,7 +3,9 @@ import java.util.ArrayList;
 public class Dictionary {
     ArrayList<Word> wordArrayList = new ArrayList<Word>();
     public void addWord(String wordText, String wordDef){
-
+        if(wordText.charAt(wordText.length()-1) == ' ') {
+            wordText = wordText.substring(0, wordText.length() - 1);
+        }
         wordArrayList.add(new Word(wordText.toLowerCase(), wordDef));
         System.out.println("Word added: " + wordText);
 
