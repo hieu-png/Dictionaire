@@ -47,8 +47,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         mainFrame.setResizable(false);
 
-        Image Icon = Toolkit.getDefaultToolkit().getImage(imageFolderPath + "bookIcon.png" );
-        mainFrame.setIconImage(Icon);
+        mainFrame.setIconImage(iconFromFile("bookIcon"));
 
         prepareWordList();
 
@@ -59,7 +58,9 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setVisible(true);
     }
 
-
+    Image iconFromFile(String fileName) {
+        return Toolkit.getDefaultToolkit().getImage(imageFolderPath + fileName);
+    }
     /**
      *
      * @param s string array to show in list.
@@ -221,9 +222,15 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     }
 
     public void prepareSpeakButton() {
-        speakButton = new JButton();
-        speakButton.setText("ACT");
+        speakButton = new JButton(new ImageIcon(
+                imageFolderPath + "speakerIcon.png"));
         speakButton.setBounds(180,10,40,40);
+
+        //speakButton.setOpaque(false);
+        speakButton.setFocusPainted(false);
+        speakButton.setBorderPainted(false);
+       // speakButton.setContentAreaFilled(false);
+
         speakButton.addActionListener(e -> {
             if(wordList.getSelectedIndex() != -1)
             speaker.speakWord(wordList.getSelectedValue());
