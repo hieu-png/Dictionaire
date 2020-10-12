@@ -6,210 +6,190 @@ import java.awt.event.*;
 public class DictionaryApplication extends DictionaryAppAction implements ActionListener {
 
     private JFrame mainFrame;
-    private final Dictionary mainDictionary = new Dictionary();
+    private final Dictionary dictionaryMain = new Dictionary();
+    private final Dictionary dictionaryFavourite = new Dictionary();
+    private final Dictionary dictionaryHistory = new Dictionary();
 
     protected JMenuBar mainMenuBar;
-    protected JMenu mainMenu;
-    protected JMenuItem addWordMenu, removeWordMenu;//, copyWord, importWordSimple, importWordAdvanced;
+    protected JMenu mainMenu, fileMenu;
+    protected JMenuItem addWordOption, removeWordOption, speakWordOption,
+                        exitOption
 
-    SqlDataManagement sdm = new SqlDataManagement();
+
+    ;//, copyWord, importWordSimple, importWordAdvanced;
+
 
     final int width = 800;
     final int height = 600;
     final int wordListWidth = 150;
     private JButton speakButton;
-    private TextAreaWithImage WordDefineArea;
+    private TextAreaWithImage textAreaDefinition;
     private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
 
-    private JList<String> ListWord = new JList<>((String[]) null);
-    private JTextField searchBar;
-    private JScrollPane ListScrollPane = new JScrollPane(null);
-    private DictionaryManagement dictionaryManagement;
-    private textToSpeech speaker = new textToSpeech();
+    private JList<String> wordList = new JList<>((String[]) null);
+    private JScrollPane wordListScrollBar = new JScrollPane(null);
 
-    int newlyAddedWordIndex = -1;
+    private JTextField textSearchBar;
+    private final textToSpeech speaker = new textToSpeech();
+
     public DictionaryApplication() {
 
-        sqlInit();
+        sqlInit(dictionaryMain);
         prepareMenu();
         prepareGUI();
     }
 
 
-    public void actionPerformed(ActionEvent e) {
-        //Them cai nay lam gi the???
-        String[] s = {};
-        //
-        if (e.getSource() == addWordMenu) {
-            addWordWindow(mainDictionary);
-            UpdateList(s, 0);
-            ListWord.setSelectedIndex(newlyAddedWordIndex);
-
-
-        } else if (e.getSource() == removeWordMenu) {
-            if (ListWord.getSelectedIndex() != -1) {
-                removeWord(mainDictionary, DictionaryManagement.dictionaryLookup(mainDictionary.getWordArrayList(),ListWord.getSelectedValue()));
-                UpdateList(s, 0);
-
-            }
-        }
-
-    }
-
 
     public void UI(DictionaryApplication dictionaryApplication) {
 
         mainFrame.setLocationRelativeTo(null);
-        mainFrame.setResizable(false);
 
+        mainFrame.setResizable(false);
 
         Image Icon = Toolkit.getDefaultToolkit().getImage(imageFolderPath + "bookIcon.png" );
         mainFrame.setIconImage(Icon);
-        //rqt
-        UpdateList(mainDictionary.wordTextArray(), 1);
-        SearchBar();
-        dictionaryApplication.ShowWordDefinition();
+
+        prepareWordList();
+
+        UpdateList(dictionaryMain.wordTextArray(), 1);
+
+        prepareTextSearchBar();
+        dictionaryApplication.prepareTextAreaDefinition();
         mainFrame.setVisible(true);
     }
 
-    public void SearchBar() {
-        searchBar = new HintTextField("Search...");
-        searchBar.setOpaque(true);
-        searchBar.setForeground(Color.LIGHT_GRAY);
 
-
-        Font f = new Font("Arial", Font.BOLD, 20);
-        searchBar.setFont(f);
-        mainFrame.add(searchBar);
-
-
-        //searchBar nhan su event Filter
-        searchBar.addKeyListener(new KeyListener() {
-            @Override
-            public void keyTyped(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-                //gỡ Jlist(ListWord) cũ
-                //thay đổi nội dung Jlist
-                //add lại Jlist vào
-//                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-//
-//                }
-                Search();
-                mainFrame.setVisible(true);
-            }
-        });
-
-        searchBar.setBounds(27, 9, wordListWidth, 40);
-    }
-//rqt
-    public void Search() {
-        String s = searchBar.getText();
-        if (!s.equals("")) {
-            searchBar.setForeground(Color.BLACK);
-
-            UpdateList(mainDictionary.searchFilter(s), 1);
-        } else {
-
-            searchBar.setForeground(Color.LIGHT_GRAY);
-
-            UpdateList(mainDictionary.wordTextArray(), 0);
-        }
-    }
-
+    /**
+     *
+     * @param s string array to show in list.
+     * @param flag whether or not to show the filtered word.
+     */
     public void UpdateList(String[] s, int flag) {
 
-
-        //TODO
-        // Wordlist refresh after each time a word is added or removed to not throws errors
-
-
-        //flag to show filteredWord
         if (flag == 1) {
-            ListWord = new JList<>(s);
+            wordList = new JList<>(s);
         } else {
-            ListWord = new JList<>(mainDictionary.wordTextArray());
+            wordList = new JList<>(dictionaryMain.wordTextArray());
         }
-        ListScrollPane.remove(ListWord);
-        mainFrame.remove(ListScrollPane);
 
 
-        ListWord.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        ListWord.setVisibleRowCount(20);
-        Font font = new Font("Arial", Font.BOLD, 14);
-        ListWord.setFont(font);
+        wordList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        wordList.setVisibleRowCount(20);
+        wordListScrollBar.remove(wordList);
+        mainFrame.remove(wordListScrollBar);
+
+        Font font = new Font("Arial", Font.BOLD, 20);
+        wordList.setFont(font);
+
         //action for defineArea
-        ListWord.addListSelectionListener(e -> {
+        wordList.addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
-                String wordNewAfterFilter = ListWord.getSelectedValue();
+                String wordNewAfterFilter = wordList.getSelectedValue();
                 int i = DictionaryManagement.dictionaryLookup(
-                        mainDictionary.getWordArrayList(), wordNewAfterFilter);
+                        dictionaryMain.getWordArrayList(), wordNewAfterFilter);
 
-                WordDefineArea.setText(mainDictionary.getWordArrayList().get(i).getText() +
-                        "  " + mainDictionary.getWordArrayList().get(i).getDefinitionLine());
+                textAreaDefinition.setText(dictionaryMain.getWordArrayList().get(i).getText() +
+                        "  " + dictionaryMain.getWordArrayList().get(i).getDefinitionLine());
             }
         });
-        ListScrollPane = new JScrollPane(ListWord);
-        ListScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        mainFrame.add(ListScrollPane);
-        ListScrollPane.setBounds(27, 50, wordListWidth, (int) ((double) height * 0.8));
+        wordListScrollBar = new JScrollPane(wordList);
+        wordListScrollBar.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
-        mainFrame.setVisible(true);
+        mainFrame.add(wordListScrollBar);
+        wordListScrollBar.setBounds(27, 50, wordListWidth, (int) ((double) height * 0.8));
+        //mainFrame.setVisible(true);
     }
 
-
-    public static void Start() {
+    public static void main(String[] args) {
         DictionaryApplication dictionaryApplication = new DictionaryApplication();
         dictionaryApplication.UI(dictionaryApplication);
     }
 
-    public static void main(String[] args) {
-        Start();
-    }
+    public void prepareWordList() {
 
-    public void ShowWordDefinition() {
-        WordDefineArea = new TextAreaWithImage(1, 10, imageFolderPath + "textBackground.png");
-        WordDefineArea.setEditable(false);
-        WordDefineArea.setCaretPosition(0);
+    }
+    public void prepareTextAreaDefinition() {
+        textAreaDefinition = new TextAreaWithImage(1, 10, imageFolderPath + "textBackground.png");
+        textAreaDefinition.setEditable(false);
+        textAreaDefinition.setCaretPosition(0);
 
         Font font = new Font("Arial", Font.BOLD, 16);
-        WordDefineArea.setFont(font);
-        JScrollPane outputScrollPane = new JScrollPane(WordDefineArea,
+        textAreaDefinition.setFont(font);
+       // mainFrame.add(textAreaDefinition);
+       // textAreaDefinition.setBounds(180, 50, 550, height - 120);
+        JScrollPane outputScrollPane = new JScrollPane(textAreaDefinition,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
         mainFrame.add(outputScrollPane);
         outputScrollPane.setBounds(180, 50, 550, height - 120);
+
+            //outputScrollPane.setAlignmentX(0);
+            //outputScrollPane.setAlignmentY(0);
+
+
     }
 
     public void prepareMenu() {
+        fileMenu = new JMenu("File");
         mainMenu = new JMenu("Edit");
+
         mainMenuBar = new JMenuBar();
-        addWordMenu = new JMenuItem("Add a new word");
-        addWordMenu.addActionListener(this);
+
+        addWordOption = new JMenuItem("Add a new word");
+        addWordOption.addActionListener(this);
 
 
-        removeWordMenu = new JMenuItem("Remove selected word");
-        removeWordMenu.addActionListener(this);
+        removeWordOption = new JMenuItem("Remove selected word");
+        removeWordOption.addActionListener(this);
 
+        speakWordOption = new JMenuItem("Speak selected word");
+        speakWordOption.addActionListener(this);
 
-        mainMenu.add(addWordMenu);
-        mainMenu.add(removeWordMenu);
+        exitOption = new JMenuItem("Exit the program");
+        exitOption.addActionListener(this);
+        fileMenu.add(exitOption);
+
+        mainMenu.add(addWordOption);
+        mainMenu.add(removeWordOption);
+        mainMenu.add(speakWordOption);
+
+        mainMenuBar.add(fileMenu);
 
         mainMenuBar.add(mainMenu);
     }
 
+
+    public void actionPerformed(ActionEvent e) {
+        String[] s = {};
+        Object source = e.getSource();
+        //When add word is clicked
+        if (source == addWordOption) {
+            addWordWindow(dictionaryMain);
+            UpdateList(s, 0);
+            wordList.setSelectedIndex(newlyAddedWordIndex);
+
+
+        } else if (source == removeWordOption) {
+            if (wordList.getSelectedIndex() != -1) {
+                removeWord(dictionaryMain, DictionaryManagement.dictionaryLookup(dictionaryMain.getWordArrayList(), wordList.getSelectedValue()));
+                UpdateList(s, 0);
+                textAreaDefinition.setText("");
+
+            }
+        } else if(source == exitOption) {
+            System.exit(0);
+        } else if(source == speakWordOption) {
+            if(wordList.getSelectedIndex() != -1)
+                speaker.speakWord(wordList.getSelectedValue());
+        }
+
+    }
+
+
     public void prepareGUI() {
-        mainFrame = new JFrame("Dictionary 12.0");
+        mainFrame = new JFrame("Dictionaire 1.0");
 
         mainFrame.setSize(width, height);
         mainFrame.getContentPane().setBackground(Color.RED);
@@ -230,101 +210,77 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         JPanel controlPanel = new JPanel();
         controlPanel.setLayout(null);
 
-        mainFrame.add(ListScrollPane);
+        mainFrame.add(wordListScrollBar);
 
 
-        SpeakButton();
+        prepareSpeakButton();
         mainFrame.add(speakButton);
         mainFrame.setJMenuBar(mainMenuBar);
         mainFrame.add(controlPanel);
         mainFrame.setVisible(true);
     }
 
-    public void SpeakButton() {
+    public void prepareSpeakButton() {
         speakButton = new JButton();
         speakButton.setText("ACT");
         speakButton.setBounds(180,10,40,40);
-        speakButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(ListWord.getSelectedIndex() != -1)
-                speaker.speakWord(ListWord.getSelectedValue());
-            }
+        speakButton.addActionListener(e -> {
+            if(wordList.getSelectedIndex() != -1)
+            speaker.speakWord(wordList.getSelectedValue());
         });
     }
 
-    public void sqlInit() {
-        sdm.connect();
-        //sdm.createTable();
-        //sdm.insertFromFileDirect(System.getProperty("user.dir") +
-        //        "\\Dictionary\\anhviet109K.txt");
-        sdm.insertToDictionary(mainDictionary);
-        mainDictionary.sort();
-    }
 
-    public void removeWord(Dictionary dictionary, int index) {
-        sdm.delete(dictionary.wordByIndex(index).getText());
-        dictionary.removeWord(index);
-        WordDefineArea.setText("");
-    }
+    public void prepareTextSearchBar() {
+        textSearchBar = new HintTextField("Search...");
+        textSearchBar.setOpaque(true);
+        textSearchBar.setForeground(Color.LIGHT_GRAY);
 
 
-    public void addWordWindow(Dictionary dictionary) {
-
-        JTextField text = new JTextField(5);
-        JTextField definition = new JTextField(5);
-
-        JTextField pronunciation = new JTextField(5);
-        //Text and Definition text field component must have the same name
-        Object[] components = {
-                new JLabel("Text"), text,
-                new JLabel("Pronunciation"), pronunciation,
-                new JLabel("Definition"), definition
-        };
-
-        //Only cancel when press cancel.
-        while(true) {
-            int addWordResult = JOptionPane.showConfirmDialog(null, components,
-                    "Enter the word's properties", JOptionPane.OK_CANCEL_OPTION);
+        Font f = new Font("Arial", Font.BOLD, 20);
+        textSearchBar.setFont(f);
+        mainFrame.add(textSearchBar);
 
 
-            if (addWordResult == JOptionPane.OK_OPTION) {
-                String wordAddMessage;
-                if (text.getText().isEmpty()) {
-                    wordAddMessage = "Please enter the word";
-                } else if (pronunciation.getText().isEmpty()) {
-                    wordAddMessage = "Please enter the word's pronunciation";
-                } else if (definition.getText().isEmpty()) {
-                    wordAddMessage = "Please enter the word's definition";
-                } else {
-                    int i;
-                    if((i = mainDictionary.findWord(text.getText())) != -1) {
+        //searchBar nhan su event Filter
+        textSearchBar.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
 
-                        mainDictionary.wordByIndex(i).addDefinition(definition.getText());
-                        sdm.updateWord(text.getText(), mainDictionary.wordByIndex(i).getDefinition());
-
-                        wordAddMessage = String.format(
-                                "\"%s\" has got a new definition!",text.getText());
-
-                    } else {
-                        String def = "/" + pronunciation.getText() + "/" + "- " + definition.getText();
-                        sdm.insertData(text.getText(), def);
-                        dictionary.addWord(text.getText(), def);
-                        wordAddMessage = String.format(
-                                "\"%s\" has been success fully added to the dictionary!",text.getText());
-
-                    }
-                    JOptionPane.showMessageDialog(null, wordAddMessage);
-                    mainDictionary.sort();
-                    newlyAddedWordIndex = mainDictionary.findWord(text.getText());
-                    break;
-                }
-                JOptionPane.showMessageDialog(null, wordAddMessage);
-
-
-            } else {
-                break;
             }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                //gỡ Jlist(ListWord) cũ
+                //thay đổi nội dung Jlist
+                //add lại Jlist vào
+//                if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+//
+//                }
+                Search(dictionaryMain);
+                mainFrame.setVisible(true);
+            }
+        });
+
+        textSearchBar.setBounds(27, 9, wordListWidth, 40);
+    }
+    //rqt
+    public void Search(Dictionary dictionary) {
+        String s = textSearchBar.getText();
+        if (!s.equals("")) {
+            textSearchBar.setForeground(Color.BLACK);
+
+            UpdateList(dictionary.searchFilter(s), 1);
+        } else {
+
+            textSearchBar.setForeground(Color.LIGHT_GRAY);
+
+            UpdateList(dictionary.wordTextArray(), 0);
         }
     }
 
