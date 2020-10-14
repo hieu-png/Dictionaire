@@ -1,4 +1,0 @@
-fridge	tủ lạnh
-pc	máy tính
-assignment	bài tập
-dictionary	từ điển

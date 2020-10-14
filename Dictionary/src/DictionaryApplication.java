@@ -9,7 +9,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     private final Dictionary dictionaryMain = new Dictionary();
     private final Dictionary dictionaryFavourite = new Dictionary();
     private final Dictionary dictionaryHistory = new Dictionary();
-
+    private Dictionary dictionaryToShow;
     protected JMenuBar mainMenuBar;
     protected JMenu mainMenu, fileMenu;
     protected JMenuItem addWordOption, removeWordOption, speakWordOption,
@@ -22,7 +22,8 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     final int width = 800;
     final int height = 600;
     final int wordListWidth = 150;
-    private JButton speakButton;
+    private JButton speakButton, addButton, removeButton;
+
     private TextAreaWithImage textAreaDefinition;
     private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
 
@@ -31,7 +32,8 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
     private JTextField textSearchBar;
     private final textToSpeech speaker = new textToSpeech();
-
+    //A null string
+    String[] nullString = {};
     public DictionaryApplication() {
 
         sqlInit(dictionaryMain);
@@ -48,6 +50,8 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.setResizable(false);
 
         mainFrame.setIconImage(iconFromFile("bookIcon"));
+
+        dictionaryToShow = dictionaryMain;
 
         prepareWordList();
 
@@ -88,10 +92,10 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
             if (!e.getValueIsAdjusting()) {
                 String wordNewAfterFilter = wordList.getSelectedValue();
                 int i = DictionaryManagement.dictionaryLookup(
-                        dictionaryMain.getWordArrayList(), wordNewAfterFilter);
+                        dictionaryToShow.getWordArrayList(), wordNewAfterFilter);
 
-                textAreaDefinition.setText(dictionaryMain.getWordArrayList().get(i).getText() +
-                        "  " + dictionaryMain.getWordArrayList().get(i).getDefinitionLine());
+                textAreaDefinition.setText(dictionaryToShow.getWordArrayList().get(i).getText() +
+                        "  " + dictionaryToShow.getWordArrayList().get(i).getDefinitionLine());
             }
         });
 
@@ -100,7 +104,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         mainFrame.add(wordListScrollBar);
         wordListScrollBar.setBounds(27, 50, wordListWidth, (int) ((double) height * 0.8));
-        //mainFrame.setVisible(true);
+        mainFrame.setVisible(true);
     }
 
     public static void main(String[] args) {
@@ -161,24 +165,32 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainMenuBar.add(mainMenu);
     }
 
-
+    public void appAddWord() {
+        if(addWordWindow(dictionaryMain)) {
+        UpdateList(dictionaryMain.wordTextArray(), 0);
+        wordList.setSelectedIndex(newlyAddedWordIndex);
+        }
+    }
+    public void appRemoveWord() {
+        if(wordList.getSelectedIndex() != -1) {
+        removeWord(dictionaryMain,
+                DictionaryManagement.dictionaryLookup(dictionaryMain.getWordArrayList(),
+                        wordList.getSelectedValue()));
+        UpdateList(nullString, 0);
+        textAreaDefinition.setText("");
+            textSearchBar.setText("");
+            wordList.setSelectedIndex(0);
+    }
+    }
     public void actionPerformed(ActionEvent e) {
-        String[] s = {};
         Object source = e.getSource();
         //When add word is clicked
         if (source == addWordOption) {
-            addWordWindow(dictionaryMain);
-            UpdateList(s, 0);
-            wordList.setSelectedIndex(newlyAddedWordIndex);
-
+            appAddWord();
 
         } else if (source == removeWordOption) {
-            if (wordList.getSelectedIndex() != -1) {
-                removeWord(dictionaryMain, DictionaryManagement.dictionaryLookup(dictionaryMain.getWordArrayList(), wordList.getSelectedValue()));
-                UpdateList(s, 0);
-                textAreaDefinition.setText("");
+                appRemoveWord();
 
-            }
         } else if(source == exitOption) {
             System.exit(0);
         } else if(source == speakWordOption) {
@@ -214,28 +226,48 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         mainFrame.add(wordListScrollBar);
 
 
-        prepareSpeakButton();
-        mainFrame.add(speakButton);
+        prepareButton();
+
         mainFrame.setJMenuBar(mainMenuBar);
         mainFrame.add(controlPanel);
         mainFrame.setVisible(true);
     }
 
-    public void prepareSpeakButton() {
+    public void prepareButton() {
+        int offset= 180;
         speakButton = new JButton(new ImageIcon(
                 imageFolderPath + "speakerIcon.png"));
-        speakButton.setBounds(180,10,40,40);
-
-        //speakButton.setOpaque(false);
-        speakButton.setFocusPainted(false);
-        speakButton.setBorderPainted(false);
-       // speakButton.setContentAreaFilled(false);
+        speakButton.setBounds(offset,10,40,40);
 
         speakButton.addActionListener(e -> {
             if(wordList.getSelectedIndex() != -1)
-            speaker.speakWord(wordList.getSelectedValue());
+                speaker.speakWord(wordList.getSelectedValue());
         });
+
+        addButton = new JButton(new ImageIcon(
+                imageFolderPath + "addIcon.png"));
+        addButton.setBounds(offset + 45,10,40,40);
+
+        addButton.addActionListener(e -> {
+            appAddWord();
+        });
+
+        removeButton = new JButton(new ImageIcon(
+                imageFolderPath + "removeIcon.png"));
+        removeButton.setBounds(offset + 90,10,40,40);
+
+        removeButton.addActionListener(e -> {
+            appRemoveWord();
+        });
+
+
+        mainFrame.add(speakButton);
+        mainFrame.add(addButton);
+        mainFrame.add(removeButton);
+
     }
+
+
 
 
     public void prepareTextSearchBar() {
@@ -272,6 +304,10 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
                 Search(dictionaryMain);
                 mainFrame.setVisible(true);
             }
+        });
+
+        textSearchBar.addActionListener(e-> {
+            wordList.setSelectedIndex(0);
         });
 
         textSearchBar.setBounds(27, 9, wordListWidth, 40);

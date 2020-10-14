@@ -25,6 +25,7 @@ public class DictionaryAppAction {
     public void sqlInit(Dictionary dictionary) {
         sdm.connect();
         //sdm.createTable();
+        //sdm.createTableHistory();
         //sdm.insertFromFileDirect(System.getProperty("user.dir") +
         //        "\\Dictionary\\anhviet109K.txt");
         sdm.insertToDictionary(dictionary);
@@ -32,13 +33,18 @@ public class DictionaryAppAction {
     }
 
     public void removeWord(Dictionary dictionary, int index) {
-        sdm.delete(dictionary.wordByIndex(index).getText());
+        String wordToRemove = dictionary.wordByIndex(index).getText();
+        JOptionPane.showMessageDialog(null,
+                String.format("\"%s\" has been removed from the dictionary!",wordToRemove));
+
+        sdm.delete(wordToRemove);
         dictionary.removeWord(index);
+
     }
 
 
-    public void addWordWindow(Dictionary dictionary) {
-
+    public boolean addWordWindow(Dictionary dictionary) {
+        boolean inserted = false;
         JTextField text = new JTextField(5);
         JTextField definition = new JTextField(5);
 
@@ -76,7 +82,7 @@ public class DictionaryAppAction {
 
                     } else {
                         String def = "/" + pronunciation.getText() + "/" + "- " + definition.getText();
-                        sdm.insertData(text.getText(), def);
+                        sdm.insertData(text.getText(), def, "words");
                         dictionary.addWord(text.getText(), def);
                         wordAddMessage = String.format(
                                 "\"%s\" has been success fully added to the dictionary!",text.getText());
@@ -85,6 +91,7 @@ public class DictionaryAppAction {
                     JOptionPane.showMessageDialog(null, wordAddMessage);
                     dictionary.sort();
                     newlyAddedWordIndex = dictionary.findWord(text.getText());
+                    inserted = true;
                     break;
                 }
                 JOptionPane.showMessageDialog(null, wordAddMessage);
@@ -94,6 +101,7 @@ public class DictionaryAppAction {
                 break;
             }
         }
+        return inserted;
     }
 
 

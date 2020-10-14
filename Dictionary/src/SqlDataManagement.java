@@ -45,22 +45,38 @@ public class SqlDataManagement {
 
     }
 
-    public void insertData(String word, String def) {
+    public void createTableHistory() {
+        try {
+            Statement createStatements = connection.createStatement();
+            String sqlCreate = "CREATE TABLE" +
+                    " IF NOT EXISTS" +
+                    " history " + //A table named history
+                    "(word_text TEXT," + //This column store the literal text
+                    " word_def TEXT);";  //This column store the definition
+            createStatements.executeUpdate(sqlCreate);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void insertData(String word, String def, String toTable) {
         //String sqlCommand = "INSERT INTO words(WORD_TEXT STRING, WORD_DEF STRING)  VALUES('" + word + "', '" + def + "')";
         word = word.replaceAll("'", "\\\''");
         def = def.replaceAll("'", "\\\''");
 
         executeCommand( String.format("INSERT INTO words VALUES('%s','%s')",
-                word,def));
+                word, def, toTable));
 
     }
 
-    public void insertData(String word, String def, String pronunciation) {
+    public void insertData(String word, String def, String pronunciation, String toTable) {
         //String sqlCommand = "INSERT INTO words(WORD_TEXT STRING, WORD_DEF STRING)  VALUES('" + word + "', '" + def + "')";
         word = word.replaceAll("'", "\\\''");
         pronunciation = pronunciation.replaceAll("'", "`");
         executeCommand( String.format("INSERT INTO words VALUES('%s','%s','%s')",
-                word, def, pronunciation));
+                word, def, pronunciation, toTable));
     }
 
     //Don't have to try catch everytime to do a command, so inflexible...
@@ -75,7 +91,7 @@ public class SqlDataManagement {
 
     public void insertFromDictionary(Dictionary dictionary) {
         for(Word word : dictionary.getWordArrayList()) {
-            insertData(word.getText(), word.getDefinition());
+            insertData(word.getText(), word.getDefinition(), "words");
             System.out.println(word.getText() + " has been added to database");
 
         }
