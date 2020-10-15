@@ -12,7 +12,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     private Dictionary dictionaryToShow;
     protected JMenuBar mainMenuBar;
     protected JMenu mainMenu, fileMenu;
-    protected JMenuItem addWordOption, removeWordOption, speakWordOption,
+    protected JMenuItem addWordOption, removeWordOption, speakWordOption, editWordOption,
                         exitOption
 
 
@@ -22,7 +22,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
     final int width = 800;
     final int height = 600;
     final int wordListWidth = 150;
-    private JButton speakButton, addButton, removeButton;
+    private JButton speakButton, addButton, removeButton, editButton;
 
     private TextAreaWithImage textAreaDefinition;
     private final String imageFolderPath = System.getProperty("user.dir") + "\\Dictionary\\Image\\";
@@ -149,6 +149,9 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         removeWordOption = new JMenuItem("Remove selected word");
         removeWordOption.addActionListener(this);
 
+        editWordOption = new JMenuItem("Edit this word");
+        editWordOption.addActionListener(this);
+
         speakWordOption = new JMenuItem("Speak selected word");
         speakWordOption.addActionListener(this);
 
@@ -158,8 +161,9 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
         mainMenu.add(addWordOption);
         mainMenu.add(removeWordOption);
-        mainMenu.add(speakWordOption);
+        mainMenu.add(editWordOption);
 
+        mainMenu.add(speakWordOption);
         mainMenuBar.add(fileMenu);
 
         mainMenuBar.add(mainMenu);
@@ -196,10 +200,20 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         } else if(source == speakWordOption) {
             if(wordList.getSelectedIndex() != -1)
                 speaker.speakWord(wordList.getSelectedValue());
+        } else if(source == editWordOption) {
+            appEditWord();
         }
 
     }
 
+    public void appEditWord() {
+        if(wordList.getSelectedIndex() != -1) {
+            if(editWord(dictionaryMain, wordList.getSelectedIndex())) {
+            UpdateList(nullString, 0);
+            textAreaDefinition.setText("");
+            }
+        }
+    }
 
     public void prepareGUI() {
         mainFrame = new JFrame("Dictionaire 1.0");
@@ -260,10 +274,18 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
             appRemoveWord();
         });
 
+        editButton = new JButton(new ImageIcon(
+                imageFolderPath + "editIcon.png"));
+        editButton.setBounds(offset + 90 + 45,10,40,40);
+
+        editButton.addActionListener(e -> {
+            appEditWord();
+        });
 
         mainFrame.add(speakButton);
         mainFrame.add(addButton);
         mainFrame.add(removeButton);
+        mainFrame.add(editButton);
 
     }
 

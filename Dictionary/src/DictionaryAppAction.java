@@ -42,6 +42,44 @@ public class DictionaryAppAction {
 
     }
 
+    public boolean editWord(Dictionary dictionary, int index) {
+        //JTextField text = new JTextField(5);
+        JTextField definition = new JTextField(5);
+        JTextField pronunciation = new JTextField(5);
+
+        //text.setText(dictionary.wordByIndex(index).getText());
+        //definition.setText(dictionary.wordByIndex(index).getDefinition());
+        //pronunciation.setText(dictionary.wordByIndex(index).toString());
+        String def = dictionary.wordByIndex(index).getDefinition();
+        String splitter[] = def.split("/-");
+        String pronoun = splitter[0] + "/";
+        def = "-" + splitter[1];
+        //Text and Definition text field component must have the same name
+        Object[] components = {
+                new JLabel("Pronunciation"), pronunciation,
+                new JLabel("Definition"), definition
+        };
+        pronunciation.setText(pronoun);
+        definition.setText(def);
+        Word word = dictionary.wordByIndex(index);
+        //Only cancel when press cancel.
+
+            int addWordResult = JOptionPane.showConfirmDialog(null, components,
+                    "Edit the word's properties", JOptionPane.OK_CANCEL_OPTION);
+
+
+            if (addWordResult == JOptionPane.OK_OPTION) {
+                dictionary.wordByIndex(index).setDefinition(pronunciation.getText() + definition.getText());
+                sdm.delete(word.getText());
+                sdm.insertData(word.getText(),pronoun + def, "words");
+                return true;
+            }
+            else {
+                return false;
+            }
+
+    }
+
 
     public boolean addWordWindow(Dictionary dictionary) {
         boolean inserted = false;

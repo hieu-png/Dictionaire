@@ -188,7 +188,7 @@ public class SqlDataManagement {
                 "WHERE word_text = ?" ;
         try (
                 PreparedStatement towa = connection.prepareStatement(command)) {
-
+            System.out.println("Word updated: "+ wordText);
             // set the corresponding param
             towa.setString(1, wordDef);
             towa.setString(2, wordText);
