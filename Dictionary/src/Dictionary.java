@@ -7,7 +7,7 @@ public class Dictionary {
             wordText = wordText.substring(0, wordText.length() - 1);
         }
         wordArrayList.add(new Word(wordText.toLowerCase(), wordDef));
-        System.out.println("Word added: " + wordText);
+       // System.out.println("Word added: " + wordText);
 
     }
     public int compareWord(Word a, Word b) {
@@ -37,7 +37,7 @@ public class Dictionary {
     }
 
     public void removeWord(int index) {
-        System.out.println("Word removed: " + wordArrayList.get(index).getText());
+       // System.out.println("Word removed: " + wordArrayList.get(index).getText());
 
         wordArrayList.remove(index);
     }

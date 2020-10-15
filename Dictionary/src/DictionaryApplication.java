@@ -179,12 +179,24 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
         if(wordList.getSelectedIndex() != -1) {
         removeWord(dictionaryMain,
                 DictionaryManagement.dictionaryLookup(dictionaryMain.getWordArrayList(),
-                        wordList.getSelectedValue()));
+                        wordList.getSelectedValue())
+        );
         UpdateList(nullString, 0);
         textAreaDefinition.setText("");
             textSearchBar.setText("");
             wordList.setSelectedIndex(0);
     }
+    }
+    public void appEditWord() {
+        if(wordList.getSelectedIndex() != -1) {
+            if(editWord(dictionaryMain,
+                    DictionaryManagement.dictionaryLookup(dictionaryMain.getWordArrayList(),
+                            wordList.getSelectedValue())
+            )) {
+                UpdateList(nullString, 0);
+                textAreaDefinition.setText("");
+            }
+        }
     }
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
@@ -206,14 +218,7 @@ public class DictionaryApplication extends DictionaryAppAction implements Action
 
     }
 
-    public void appEditWord() {
-        if(wordList.getSelectedIndex() != -1) {
-            if(editWord(dictionaryMain, wordList.getSelectedIndex())) {
-            UpdateList(nullString, 0);
-            textAreaDefinition.setText("");
-            }
-        }
-    }
+
 
     public void prepareGUI() {
         mainFrame = new JFrame("Dictionaire 1.0");

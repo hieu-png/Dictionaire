@@ -29,6 +29,7 @@ public class DictionaryAppAction {
         //sdm.insertFromFileDirect(System.getProperty("user.dir") +
         //        "\\Dictionary\\anhviet109K.txt");
         sdm.insertToDictionary(dictionary);
+        //sdm.cleanUpSpace(dictionary);
         dictionary.sort();
     }
 
@@ -37,41 +38,40 @@ public class DictionaryAppAction {
         JOptionPane.showMessageDialog(null,
                 String.format("\"%s\" has been removed from the dictionary!",wordToRemove));
 
-        sdm.delete(wordToRemove);
+        sdm.deleteData(wordToRemove);
         dictionary.removeWord(index);
 
     }
 
     public boolean editWord(Dictionary dictionary, int index) {
-        //JTextField text = new JTextField(5);
+
         JTextField definition = new JTextField(5);
         JTextField pronunciation = new JTextField(5);
 
-        //text.setText(dictionary.wordByIndex(index).getText());
-        //definition.setText(dictionary.wordByIndex(index).getDefinition());
-        //pronunciation.setText(dictionary.wordByIndex(index).toString());
         String def = dictionary.wordByIndex(index).getDefinition();
         String splitter[] = def.split("/-");
         String pronoun = splitter[0] + "/";
-        def = "-" + splitter[1];
+        def = "- " + splitter[1];
+
         //Text and Definition text field component must have the same name
         Object[] components = {
                 new JLabel("Pronunciation"), pronunciation,
                 new JLabel("Definition"), definition
         };
+
         pronunciation.setText(pronoun);
         definition.setText(def);
-        Word word = dictionary.wordByIndex(index);
-        //Only cancel when press cancel.
 
-            int addWordResult = JOptionPane.showConfirmDialog(null, components,
+        Word word = dictionary.wordByIndex(index);
+
+            int editWordResult = JOptionPane.showConfirmDialog(null, components,
                     "Edit the word's properties", JOptionPane.OK_CANCEL_OPTION);
 
 
-            if (addWordResult == JOptionPane.OK_OPTION) {
-                dictionary.wordByIndex(index).setDefinition(pronunciation.getText() + definition.getText());
-                sdm.delete(word.getText());
-                sdm.insertData(word.getText(),pronoun + def, "words");
+            if (editWordResult == JOptionPane.OK_OPTION) {
+                dictionary.wordByIndex(index).setDefinition(
+                        pronunciation.getText() + definition.getText());
+                sdm.updateWordData(dictionary.wordByIndex(index).getText(), dictionary.wordByIndex(index).getDefinition());
                 return true;
             }
             else {
@@ -113,14 +113,14 @@ public class DictionaryAppAction {
                     if((i = dictionary.findWord(text.getText())) != -1) {
 
                         dictionary.wordByIndex(i).addDefinition(definition.getText());
-                        sdm.updateWord(text.getText(), dictionary.wordByIndex(i).getDefinition());
+                        sdm.updateWordData(text.getText(), dictionary.wordByIndex(i).getDefinition());
 
                         wordAddMessage = String.format(
                                 "\"%s\" has got a new definition!",text.getText());
 
                     } else {
                         String def = "/" + pronunciation.getText() + "/" + "- " + definition.getText();
-                        sdm.insertData(text.getText(), def, "words");
+                        sdm.insertData(text.getText(), def);
                         dictionary.addWord(text.getText(), def);
                         wordAddMessage = String.format(
                                 "\"%s\" has been success fully added to the dictionary!",text.getText());

@@ -61,22 +61,12 @@ public class SqlDataManagement {
 
     }
 
-    public void insertData(String word, String def, String toTable) {
-        //String sqlCommand = "INSERT INTO words(WORD_TEXT STRING, WORD_DEF STRING)  VALUES('" + word + "', '" + def + "')";
-        word = word.replaceAll("'", "\\\''");
-        def = def.replaceAll("'", "\\\''");
-
-        executeCommand( String.format("INSERT INTO words VALUES('%s','%s')",
-                word, def, toTable));
-
-    }
-
     public void insertData(String word, String def, String pronunciation, String toTable) {
         //String sqlCommand = "INSERT INTO words(WORD_TEXT STRING, WORD_DEF STRING)  VALUES('" + word + "', '" + def + "')";
         word = word.replaceAll("'", "\\\''");
         pronunciation = pronunciation.replaceAll("'", "`");
-        executeCommand( String.format("INSERT INTO words VALUES('%s','%s','%s')",
-                word, def, pronunciation, toTable));
+        executeCommand( String.format("INSERT INTO %s VALUES('%s','%s','%s')",
+                toTable, word, def, pronunciation));
     }
 
     //Don't have to try catch everytime to do a command, so inflexible...
@@ -91,7 +81,7 @@ public class SqlDataManagement {
 
     public void insertFromDictionary(Dictionary dictionary) {
         for(Word word : dictionary.getWordArrayList()) {
-            insertData(word.getText(), word.getDefinition(), "words");
+            insertData(word.getText(), word.getDefinition());
             System.out.println(word.getText() + " has been added to database");
 
         }
@@ -167,38 +157,82 @@ public class SqlDataManagement {
 
     }
 
-    public void delete(String wordText) {
-        String command = "DELETE FROM words WHERE word_text = ?";
+
+    public void insertData(String word, String def) {
+        //String sqlCommand = "INSERT INTO words(WORD_TEXT STRING, WORD_DEF STRING)  VALUES('" + word + "', '" + def + "')";
+       /* word = word.replaceAll("'", "\\\''");
+        def = def.replaceAll("'", "\\\''");
+
+        executeCommand( String.format("INSERT INTO words VALUES('%s','%s')",
+                 word, def));
+                 */
+
+        String query = "INSERT INTO words VALUES(?,?)";
 
         try (
-             PreparedStatement towa = connection.prepareStatement(command)) {
-
-            // set the corresponding param
-            towa.setString(1, wordText);
-            // execute the delete statement
+                PreparedStatement towa = connection.prepareStatement(query)) {
+            towa.setString(1, word);
+            towa.setString(2, def);
             towa.executeUpdate();
 
+
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+
+    }
+
+    public void cleanUpSpace(Dictionary dictionary) {
+        for(Word word : dictionary.wordArrayList) {
+           // if(word.getText().charAt(word.getText().length()-1) == ' ')
+            {
+               // System.out.println("cleaned");
+        String query = "UPDATE words " +
+                "SET word_text = ? " +
+                "WHERE word_text = ?" ;
+        try (
+                PreparedStatement towa = connection.prepareStatement(query)) {
+        towa.setString(1,
+                word.getText());
+        towa.setString(2, word.getText() + " ");
+        towa.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        }
         }
     }
 
-    public void updateWord (String wordText, String wordDef){
-        String command = "UPDATE words SET word_def = ? " +
+    public void deleteData(String wordText) {
+        String query = "DELETE FROM words WHERE word_text=?;";
+        try (
+             PreparedStatement towa = connection.prepareStatement(query)) {
+
+            towa.setString(1, wordText);
+            //System.out.println(towa.)
+            towa.executeUpdate();
+            System.out.println(wordText + " has been deleted");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateWordData(String wordText, String wordDef) {
+        String query = "UPDATE words " +
+                "SET word_def = ? " +
                 "WHERE word_text = ?" ;
         try (
-                PreparedStatement towa = connection.prepareStatement(command)) {
-            System.out.println("Word updated: "+ wordText);
-            // set the corresponding param
+                PreparedStatement towa = connection.prepareStatement(query)) {
+
             towa.setString(1, wordDef);
             towa.setString(2, wordText);
-
-            // execute the delete statement
             towa.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+            e.printStackTrace();
+            }
     }
 
 
